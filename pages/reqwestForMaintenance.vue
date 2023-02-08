@@ -31,6 +31,7 @@
           </v-list>
           <v-text-field
               label="ФИО"
+              v-model="fio"
               :rules="[required]"
               required>
           </v-text-field>
@@ -55,6 +56,7 @@
           </v-text-field>
           <v-text-field
               label="Должность"
+              v-model="post"
               >
           </v-text-field>
           <v-list>
@@ -63,6 +65,7 @@
           </v-list>
           <v-text-field
               label="Название мероприятия"
+              v-model="nameEvent"
               :rules="[required]"
               required>
           </v-text-field>
@@ -72,10 +75,12 @@
           </Datepicker>
           <v-text-field
               label="Адрес мероприятия"
+              v-model="addressEvent"
               :rules="[required]"
               required>
           </v-text-field>
           <v-textarea label="Описание мероприятия"
+                      v-model="descriptionEvent"
                       :rules="[required]"
                       required>
           </v-textarea>
@@ -84,6 +89,7 @@
             <v-divider></v-divider>
           </v-list>
           <v-text-field
+              v-model="quantityVolunteer"
               label="Общее кол-во волонтёров"
               :rules="[required]"
               required>
@@ -99,6 +105,7 @@
           </v-combobox>
           <v-text-field
               label="Форма одежды волонтёров"
+              v-model="clothingVolunteer"
               :rules="[required]"
               required>
           </v-text-field>
@@ -107,7 +114,7 @@
           </v-list-subheader>
           <v-range-slider
               class="mt-4"
-              v-model="valueage"
+              v-model="ageRestrictions"
               step="1"
               thumb-label="always"
               :rules="[required]"
@@ -127,6 +134,7 @@
             </v-list-subheader>
             <v-text-field
                 label="Название ФНД"
+                v-model="nameFND[index]"
                 required>
             </v-text-field>
             <v-label>Даты работы ФНД</v-label>
@@ -139,10 +147,12 @@
             </div>
             <v-text-field
                 label="Колличество волонтеров"
+                v-model="quantityVolunteerFND[index]"
                 :rules="[required]"
                 required>
             </v-text-field>
             <v-text-field
+                v-model="descriptionFND[index]"
                 label="Описание работы" :rules="[required]" required>
             </v-text-field>
           </div>
@@ -241,27 +251,39 @@ import {email, required, telephone} from "~/utils/rules";
 import {Ref} from "vue";
 import { ru } from 'date-fns/locale';
 import {VueDatePicker} from "@vuepic/vue-datepicker";
+//Организации
+const organizations = ref()
+const items_organizations = ref(['СибГУ им. Решетнева', 'Волонтерский центр СибГУ'])
+//Контактные данные
+const fio=ref()
+const phone = ref()
+const mail = ref()
+const post= ref()
+//Данные по мероприятию
+const nameEvent=ref()
+const date = ref()
+const addressEvent=ref()
+const descriptionEvent=ref()
+//Данные по волонтерскому сопровождению
+const quantityVolunteer=ref()
+const items_skills = ref([])
+const skills = ref()
+const clothingVolunteer=ref()
+const ageRestrictions = ref([18, 30])
+const numberOfFunctional = ref(0)
+//ФНД
+const nameFND=ref([])
+const dateFND = ref([])
+const time=ref([])
+const quantityVolunteerFND=ref([])
+const descriptionFND=ref([])
 //Radio
 const tyLetter = ref(true)
 const food = ref(true)
 const memoRector = ref(true)
 const release = ref(true)
-
-
-const items_organizations = ref(['СибГУ им. Решетнева', 'Волонтерский центр СибГУ'])
-const numberOfFunctional = ref(0)
+//Валидация
 const valid = ref()
-const organizations = ref()
-const phone = ref()
-const mail = ref()
-const valueage = ref([18, 30])
-const skills = ref()
-const items_skills = ref([])
-
-const date = ref()
-const dateFND = ref([])
-const time=ref([])
-
 const form=ref()
 
 const datepickerFND:Ref<Date[]>=ref([])
