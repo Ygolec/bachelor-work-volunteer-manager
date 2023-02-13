@@ -144,7 +144,7 @@
           </Datepicker>
           <div v-for="(n,indexTime) in fnds[index].dateFND">
             <v-label>Время работы волонтера {{ n }}</v-label>
-            <Datepicker :ref="datepickerTimeFND[index][indexTime]" v-model="fnds[index].time" time-picker
+            <Datepicker :ref="datepickerTimeFND[index][indexTime]" :model-value="fnds.getTime(index)[indexTime]" time-picker
                         disable-time-range-validation
                         range placeholder="Select Time" class="mt-2 mb-4" required/>
           </div>
@@ -283,13 +283,17 @@ const quantityVolunteerFND = ref([])
 const descriptionFND = ref([])
 
 
-const fnds:Ref<{nameFND:string,dateFND:Date[],time:Date[],quantityVolunteerFND:number,descriptionFND:string}[]> = ref([])
+const fnds: Ref<{ nameFND: string, dateFND: Date[], times: Date[][], quantityVolunteerFND: number, descriptionFND: string }[]> = ref([])
 watch(numberOfFunctional, (newValue) => {
   for (let i = 0; i < newValue; i++) {
     if (!fnds.value[i]) fnds.value[i] = reactive({
       nameFND: '',
       dateFND: [],
-      time: [],
+      times: [] as Date[][],
+      getTime(index: number) {
+        if (!this.times[index]) this.times[index] = []
+        return this.times[index]
+      },
       quantityVolunteerFND: 0,
       descriptionFND: ''
     })
@@ -297,17 +301,7 @@ watch(numberOfFunctional, (newValue) => {
   fnds.value.splice(newValue)
 }, {immediate: true})
 
-const FND = computed(() => {
-  return nameFND.value.map((name, index) => {
-    return {
-      name,
-      dateFND: dateFND.value[index],
-      time: time.value[index],
-      quantityVolunteerFND: quantityVolunteerFND.value[index],
-      descriptionFND: descriptionFND.value[index]
-    }
-  })
-})
+
 //Radio
 const tyLetter = ref(true)
 const food = ref(true)
