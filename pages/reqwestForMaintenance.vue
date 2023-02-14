@@ -11,7 +11,7 @@
       >
 
         <v-combobox
-            v-model="organizations"
+            v-model="organizations[0]"
             label="Организация заявитель"
             :items="items_organizations"
             :rules="[required]"
@@ -70,7 +70,7 @@
             required>
         </v-text-field>
         <v-label>Дата мероприятия</v-label>
-        <Datepicker ref="datepickerEvent" :format-locale="ru" locale="ru" :enable-time-picker="false" v-model="date"
+        <Datepicker ref="datepickerEvent" locale="ru" :enable-time-picker="false" v-model="date"
                     multi-dates
                     class="mt-2 mb-4" required>
         </Datepicker>
@@ -138,13 +138,15 @@
               required>
           </v-text-field>
           <v-label>Даты работы ФНД</v-label>
-          <Datepicker :ref="datepickerFND[index]" locale="ru" :enable-time-picker="false" v-model="fnds[index].dateFND"
+          <Datepicker locale="ru" :enable-time-picker="false" v-model="fnds[index].dateFND"
                       model-type="dd.MM.yyyy"
                       :allowed-dates="date" multi-dates class="mt-2 mb-4" required>
           </Datepicker>
           <div v-for="(n,indexTime) in fnds[index].dateFND">
             <v-label>Время работы волонтера {{ n }}</v-label>
-            <Datepicker :ref="datepickerTimeFND[index][indexTime]" :model-value="fnds.getTime(index)[indexTime]" time-picker
+            <Datepicker :model-value="fnds[index].getTime(indexTime)"
+                        @update:model-value="newValue => fnds[index].times[indexTime] = newValue"
+                        time-picker
                         disable-time-range-validation
                         range placeholder="Select Time" class="mt-2 mb-4" required/>
           </div>
@@ -238,7 +240,6 @@
 
         <div>
           <v-btn
-              type="submit"
               @click="validate">
             Отправить
           </v-btn>
@@ -255,7 +256,7 @@ import {Ref} from "vue";
 import {VueDatePicker} from "@vuepic/vue-datepicker";
 import {integer} from "vscode-languageserver-types";
 //Организации
-const organizations = ref()
+const organizations = ref([])
 const items_organizations = ref(['СибГУ им. Решетнева', 'Волонтерский центр СибГУ'])
 //Контактные данные
 const fio = ref()
@@ -276,14 +277,7 @@ const ageRestrictions = ref([18, 30])
 const numberOfFunctional = ref(0)
 //ФНД
 
-const nameFND = ref([])
-const dateFND = ref([])
-const time = ref([])
-const quantityVolunteerFND = ref([])
-const descriptionFND = ref([])
-
-
-const fnds: Ref<{ nameFND: string, dateFND: Date[], times: Date[][], quantityVolunteerFND: number, descriptionFND: string }[]> = ref([])
+const fnds: Ref<{ nameFND: string, dateFND: Date[], times: Date[][], quantityVolunteerFND: number, descriptionFND: string, getTime: (index: number) => Date[] }[]> = ref([])
 watch(numberOfFunctional, (newValue) => {
   for (let i = 0; i < newValue; i++) {
     if (!fnds.value[i]) fnds.value[i] = reactive({
@@ -291,7 +285,7 @@ watch(numberOfFunctional, (newValue) => {
       dateFND: [],
       times: [] as Date[][],
       getTime(index: number) {
-        if (!this.times[index]) this.times[index] = []
+        if (!this.times[index]) this.times[index] = [new Date(),new Date()]
         return this.times[index]
       },
       quantityVolunteerFND: 0,
@@ -321,10 +315,10 @@ async function validate() {
   })
 
   const {valid} = await form.value.validate()
-  if (valid) {
+  /*if (valid) {*/
     await $fetch('/api/volunteerSupportRequest', {
       method: 'post',
-      body: {
+      body: reactive({
         organizations,
         fio,
         phone,
@@ -334,15 +328,15 @@ async function validate() {
         date,
         addressEvent,
         descriptionEvent,
-        quantityVolunteer,
+        quantityVolunteer:+quantityVolunteer.value,
         skills,
         clothingVolunteer,
         ageRestrictions,
-        FND
-      }
+        fnds
+      })
     });
     alert('Отправлено')
-  }
+ /* }*/
 }
 </script>
 

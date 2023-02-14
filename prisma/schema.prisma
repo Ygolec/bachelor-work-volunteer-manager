@@ -11,38 +11,43 @@ datasource db {
 }
 
 model VolunteerSupportRequest {
-  id            Int            @id @default(autoincrement())
-  organizations Organization[]
-  fio String
-  phone Int
-  mail String
-  post String?
-  nameEvent String
-  date DateTime
-  addressEvent String
-  descriptionEvent String
+  id                Int            @id @default(autoincrement())
+  organizations     Organization[]
+  fio               String
+  phone             String
+  mail              String
+  post              String?
+  nameEvent         String
+  date              DateTime[]
+  addressEvent      String
+  descriptionEvent  String
   quantityVolunteer Int
-  skills String[]
+  skills            String[]
   clothingVolunteer String
-  ageRestrictions Int[]
-  fnd Fnd[]
+  ageRestrictions   Int[]
+  fnds               Fnd[]
 }
 
 model Organization {
-  id                        Int                      @id @default(autoincrement())
-  name                      String
+  id                       Int                       @id @default(autoincrement())
+  name                     String @unique
   volunteerSupportRequests VolunteerSupportRequest[]
 }
 
-model Fnd{
-  id                        Int                      @id @default(autoincrement())
-  nameFND String
-  dateFND DateTime[]
-  time DateTime[]
-  quantityVolunteerFND Int
-  descriptionFND String
+model Fnd {
+  id                       Int                       @id @default(autoincrement())
+  nameFND                  String
+  dateFND                  DateTime[]
+  times                     FndTime[]
+  quantityVolunteerFND     Int
+  descriptionFND           String
   volunteerSupportRequests VolunteerSupportRequest[]
 }
 
-
-
+model FndTime {
+  id    Int      @id @default(autoincrement())
+  start DateTime
+  end   DateTime
+  fnd   Fnd      @relation(fields: [fndId], references: [id])
+  fndId Int
+}
