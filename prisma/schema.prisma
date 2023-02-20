@@ -25,12 +25,12 @@ model VolunteerSupportRequest {
   skills            String[]
   clothingVolunteer String
   ageRestrictions   Int[]
-  fnds               Fnd[]
+  fnds              Fnd[]
 }
 
 model Organization {
   id                       Int                       @id @default(autoincrement())
-  name                     String @unique
+  name                     String                    @unique
   volunteerSupportRequests VolunteerSupportRequest[]
 }
 
@@ -38,7 +38,7 @@ model Fnd {
   id                       Int                       @id @default(autoincrement())
   nameFND                  String
   dateFND                  DateTime[]
-  times                     FndTime[]
+  times                    FndTime[]
   quantityVolunteerFND     Int
   descriptionFND           String
   volunteerSupportRequests VolunteerSupportRequest[]

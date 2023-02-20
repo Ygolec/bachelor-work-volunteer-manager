@@ -3,37 +3,60 @@ import {PrismaClient} from "@prisma/client";
 const prisma = new PrismaClient()
 export default defineEventHandler(async (event) => {
     const body = await readBody(event)
-    prisma.fnd.createMany(body.fnds)
+    console.log(JSON.stringify(body,null,2));
+/*    body.fnds.map((item: { nameFND: any; dateFND: any; times: any; quantityVolunteerFND: any; volunteerSupportRequests: any; }) => {
+        return prisma.fnd.create({
+            data: {
+                nameFND: item.nameFND,
+                descriptionFND: item.nameFND,
+                dateFND: item.dateFND,
+                times: item.times,
+                quantityVolunteerFND: item.quantityVolunteerFND,
+                volunteerSupportRequests: item.volunteerSupportRequests
+            }
+        })
+    })*/
     const newRequest = await prisma.volunteerSupportRequest.create({
         data: {
             organizations: {
-                connectOrCreate:{
-                    create:{
-                        name:body.organizations[0]
+                connectOrCreate: {
+                    create: {
+                        name: body.organizations[0]
                     },
-                    where:{
-                        name:body.organizations[0]
+                    where: {
+                        name: body.organizations[0]
                     }
                 }
             },
-            fio:body.fio,
-            phone:body.phone,
-            mail:body.mail,
-            post:body.post,
-            nameEvent:body.nameEvent,
-            date:body.date,
-            addressEvent:body.addressEvent,
-            descriptionEvent:body.descriptionEvent,
-            quantityVolunteer:body.quantityVolunteer,
-            skills:body.skills,
-            clothingVolunteer:body.clothingVolunteer,
-            ageRestrictions:body.ageRestrictions,
+            fio: body.fio,
+            phone: body.phone,
+            mail: body.mail,
+            post: body.post,
+            nameEvent: body.nameEvent,
+            date: body.date,
+            addressEvent: body.addressEvent,
+            descriptionEvent: body.descriptionEvent,
+            quantityVolunteer: body.quantityVolunteer,
+            skills: body.skills,
+            clothingVolunteer: body.clothingVolunteer,
+            ageRestrictions: body.ageRestrictions,
             fnds:{
-                create: body.fnds
-            }
+                create:body.fnds.map((item: { times: any; })=>{
+                    return {
+                        ...item,
+                        times:{
+                            create: item.times.map((time: any[])=>{
+                                return{
+                                    start:time[0],
+                                    end:time[1]
+                                }
+                            })
+                        }
+                    }
+                })
+              }
         }
     })
-
     console.log(body)
     return newRequest
 })

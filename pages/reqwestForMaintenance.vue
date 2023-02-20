@@ -139,20 +139,19 @@
           </v-text-field>
           <v-label>Даты работы ФНД</v-label>
           <Datepicker locale="ru" :enable-time-picker="false" v-model="fnds[index].dateFND"
-                      model-type="dd.MM.yyyy"
                       :allowed-dates="date" multi-dates class="mt-2 mb-4" required>
           </Datepicker>
           <div v-for="(n,indexTime) in fnds[index].dateFND">
-            <v-label>Время работы волонтера {{ n }}</v-label>
+            <v-label>Время работы волонтера {{ n }}{{indexTime}}</v-label>
             <Datepicker :model-value="fnds[index].getTime(indexTime)"
-                        @update:model-value="newValue => fnds[index].times[indexTime] = newValue"
+                        @update:model-value="newValue => {let date1 = new Date();date1.setHours(newValue[0].hours,newValue[0].minutes,newValue[0].seconds);let date2 = new Date();date2.setHours(newValue[1].hours,newValue[1].minutes,newValue[1].seconds); fnds[index].times[indexTime] = [date1,date2]}"
                         time-picker
                         disable-time-range-validation
                         range placeholder="Select Time" class="mt-2 mb-4" required/>
           </div>
           <v-text-field
               label="Колличество волонтеров"
-              v-model="fnds[index].quantityVolunteerFND"
+              v-model.number="fnds[index].quantityVolunteerFND"
               :rules="[required]"
               required>
           </v-text-field>
@@ -251,28 +250,28 @@
 </template>
 
 <script setup lang="ts">
+
 import {email, required, telephone} from "~/utils/rules";
 import {Ref} from "vue";
-import {VueDatePicker} from "@vuepic/vue-datepicker";
-import {integer} from "vscode-languageserver-types";
+import Datepicker, {VueDatePicker} from "@vuepic/vue-datepicker";
 //Организации
-const organizations = ref([])
 const items_organizations = ref(['СибГУ им. Решетнева', 'Волонтерский центр СибГУ'])
+const organizations = ref([items_organizations.value[0]])
 //Контактные данные
-const fio = ref()
-const phone = ref()
-const mail = ref()
-const post = ref()
+const fio = ref("Чистобаев")
+const phone = ref("89233325700")
+const mail = ref("thekevindit@gmail.com")
+const post = ref("Руководитель")
 //Данные по мероприятию
-const nameEvent = ref()
-const date = ref()
-const addressEvent = ref()
-const descriptionEvent = ref()
+const nameEvent = ref("Написание вкр")
+const date = ref([new Date()])
+const addressEvent = ref("Тута")
+const descriptionEvent = ref("Великое написание описание вкр")
 //Данные по волонтерскому сопровождению
-const quantityVolunteer = ref()
-const items_skills = ref([])
-const skills = ref()
-const clothingVolunteer = ref()
+const quantityVolunteer = ref(25)
+const items_skills = ref(['Умный','Красивый'])
+const skills = ref([items_skills.value[0],items_skills.value[1]])
+const clothingVolunteer = ref("Джинсы")
 const ageRestrictions = ref([18, 30])
 const numberOfFunctional = ref(0)
 //ФНД
@@ -314,7 +313,7 @@ async function validate() {
     console.log(DatePicker)
   })
 
-  const {valid} = await form.value.validate()
+ /* const {valid} = await form.value.validate()*/
   /*if (valid) {*/
     await $fetch('/api/volunteerSupportRequest', {
       method: 'post',
