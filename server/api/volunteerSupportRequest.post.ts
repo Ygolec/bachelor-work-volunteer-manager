@@ -3,19 +3,6 @@ import {PrismaClient} from "@prisma/client";
 const prisma = new PrismaClient()
 export default defineEventHandler(async (event) => {
     const body = await readBody(event)
-    console.log(JSON.stringify(body,null,2));
-/*    body.fnds.map((item: { nameFND: any; dateFND: any; times: any; quantityVolunteerFND: any; volunteerSupportRequests: any; }) => {
-        return prisma.fnd.create({
-            data: {
-                nameFND: item.nameFND,
-                descriptionFND: item.nameFND,
-                dateFND: item.dateFND,
-                times: item.times,
-                quantityVolunteerFND: item.quantityVolunteerFND,
-                volunteerSupportRequests: item.volunteerSupportRequests
-            }
-        })
-    })*/
     const newRequest = await prisma.volunteerSupportRequest.create({
         data: {
             organizations: {
@@ -57,6 +44,5 @@ export default defineEventHandler(async (event) => {
               }
         }
     })
-    console.log(body)
     return newRequest
 })

@@ -3,6 +3,7 @@
   <v-app-bar class="bg-primary">
     <NuxtLink to="/authentication">Авторизация</NuxtLink>
     <NuxtLink to="/reqwestForMaintenance">Форма</NuxtLink>
+    <NuxtLink to="/volunteerEvents">Мероприятия</NuxtLink>
 <!--    <v-btn>Авторизация</v-btn>-->
   </v-app-bar>
   <v-main>
