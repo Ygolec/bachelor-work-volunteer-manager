@@ -26,6 +26,7 @@ model VolunteerSupportRequest {
   clothingVolunteer String
   ageRestrictions   Int[]
   fnds              Fnd[]
+  statusRequest     String
 }
 
 model Organization {

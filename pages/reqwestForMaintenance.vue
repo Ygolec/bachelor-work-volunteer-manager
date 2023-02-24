@@ -139,15 +139,18 @@
           </v-text-field>
           <v-label>Даты работы ФНД</v-label>
           <Datepicker locale="ru" :enable-time-picker="false" v-model="fnds[index].dateFND"
+                      @update:model-value="(item)=>checkCountFndTimes(item,fnds[index].times)"
                       :allowed-dates="date" multi-dates class="mt-2 mb-4" required>
           </Datepicker>
           <div v-for="(n,indexTime) in fnds[index].dateFND">
-            <v-label>Время работы волонтера {{ n }}{{indexTime}}</v-label>
-            <Datepicker :model-value="fnds[index].getTime(indexTime)"
-                        @update:model-value="newValue => {let date1 = new Date();date1.setHours(newValue[0].hours,newValue[0].minutes,newValue[0].seconds);let date2 = new Date();date2.setHours(newValue[1].hours,newValue[1].minutes,newValue[1].seconds); fnds[index].times[indexTime] = [date1,date2]}"
-                        time-picker
-                        disable-time-range-validation
-                        range placeholder="Select Time" class="mt-2 mb-4" required/>
+            <v-label>Время работы волонтера {{ n }}{{ indexTime }}</v-label>
+            <Datepicker
+                :model-value="returnTime(fnds[index].getTime(indexTime))"
+                @update:model-value="newValue => {let date1 = new Date();date1.setHours(newValue[0].hours,newValue[0].minutes,newValue[0].seconds);let date2 = new Date();date2.setHours(newValue[1].hours,newValue[1].minutes,newValue[1].seconds); fnds[index].times[indexTime] = [date1,date2]}"
+                time-picker
+                disable-time-range-validation
+                range placeholder="Select Time" class="mt-2 mb-4" required>
+            </Datepicker>
           </div>
           <v-text-field
               label="Колличество волонтеров"
@@ -269,8 +272,8 @@ const addressEvent = ref("Тута")
 const descriptionEvent = ref("Великое написание описание вкр")
 //Данные по волонтерскому сопровождению
 const quantityVolunteer = ref(25)
-const items_skills = ref(['Умный','Красивый'])
-const skills = ref([items_skills.value[0],items_skills.value[1]])
+const items_skills = ref(['Умный', 'Красивый'])
+const skills = ref([items_skills.value[0], items_skills.value[1]])
 const clothingVolunteer = ref("Джинсы")
 const ageRestrictions = ref([18, 30])
 const numberOfFunctional = ref(0)
@@ -284,7 +287,7 @@ watch(numberOfFunctional, (newValue) => {
       dateFND: [],
       times: [] as Date[][],
       getTime(index: number) {
-        if (!this.times[index]) this.times[index] = [new Date(),new Date()]
+        if (!this.times[index]) this.times[index] = [new Date(), new Date()]
         return this.times[index]
       },
       quantityVolunteerFND: 0,
@@ -307,35 +310,44 @@ const form = ref()
 const datepickerFND: Ref<Date[]> = ref([])
 const datepickerTimeFND: Ref<VueDatePicker[]> = ref([])
 const datepickerEvent: Ref<VueDatePicker | undefined> = ref()
+//Статус заявки
 
+function returnTime(dates: Date[]) {
+  return dates.map(item=>{
+    return {hours:item.getHours(),minutes:item.getMinutes(),seconds:item.getSeconds()}
+  })
+}
+function checkCountFndTimes(dates:Date[],times:Date[][]) {
+  times.splice(dates.length)
+}
 async function validate() {
   datepickerFND.value.forEach(DatePicker => {
     console.log(DatePicker)
   })
 
- /* const {valid} = await form.value.validate()*/
+  /* const {valid} = await form.value.validate()*/
   /*if (valid) {*/
-    await $fetch('/api/volunteerSupportRequest', {
-      method: 'post',
-      body: reactive({
-        organizations,
-        fio,
-        phone,
-        mail,
-        post,
-        nameEvent,
-        date,
-        addressEvent,
-        descriptionEvent,
-        quantityVolunteer:+quantityVolunteer.value,
-        skills,
-        clothingVolunteer,
-        ageRestrictions,
-        fnds
-      })
-    });
-    alert('Отправлено')
- /* }*/
+  await $fetch('/api/volunteerSupportRequest', {
+    method: 'post',
+    body: reactive({
+      organizations,
+      fio,
+      phone,
+      mail,
+      post,
+      nameEvent,
+      date,
+      addressEvent,
+      descriptionEvent,
+      quantityVolunteer: +quantityVolunteer.value,
+      skills,
+      clothingVolunteer,
+      ageRestrictions,
+      fnds
+    })
+  });
+  alert('Отправлено')
+  /* }*/
 }
 </script>
 

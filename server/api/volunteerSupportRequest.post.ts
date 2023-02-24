@@ -3,7 +3,7 @@ import {PrismaClient} from "@prisma/client";
 const prisma = new PrismaClient()
 export default defineEventHandler(async (event) => {
     const body = await readBody(event)
-    const newRequest = await prisma.volunteerSupportRequest.create({
+    return await prisma.volunteerSupportRequest.create({
         data: {
             organizations: {
                 connectOrCreate: {
@@ -27,22 +27,22 @@ export default defineEventHandler(async (event) => {
             skills: body.skills,
             clothingVolunteer: body.clothingVolunteer,
             ageRestrictions: body.ageRestrictions,
-            fnds:{
-                create:body.fnds.map((item: { times: any; })=>{
+            fnds: {
+                create: body.fnds.map((item: { times: any; }) => {
                     return {
                         ...item,
-                        times:{
-                            create: item.times.map((time: any[])=>{
-                                return{
-                                    start:time[0],
-                                    end:time[1]
+                        times: {
+                            create: item.times.map((time: any[]) => {
+                                return {
+                                    start: time[0],
+                                    end: time[1]
                                 }
                             })
                         }
                     }
                 })
-              }
+            },
+            statusRequest: "send"
         }
     })
-    return newRequest
 })
