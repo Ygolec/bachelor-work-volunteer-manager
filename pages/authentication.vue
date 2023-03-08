@@ -27,10 +27,7 @@
                      class="mr-4 flex-grow-1">
                 Войти
               </v-btn>
-              <v-btn color="primary"
-                     class="flex-grow-1">
-                Регистрация
-              </v-btn>
+              <registration-form/>
             </div>
             <v-btn
                 color="info"
@@ -38,6 +35,7 @@
                 class="mt-2">
               Сибгу
             </v-btn>
+
           </v-form>
         </v-card-text>
       </v-card>

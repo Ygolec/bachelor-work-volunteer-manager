@@ -2,10 +2,16 @@ import {createVuetify} from "vuetify";
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 
+import {ru,en} from 'vuetify/locale'
 
 export default defineNuxtPlugin(nuxtApp => {
     const vuetify = createVuetify({
         components,
+        locale:{
+            locale:'ru',
+            fallback:'en',
+            messages:{ru,en}
+        },
         directives,
         theme: {
             themes: {
