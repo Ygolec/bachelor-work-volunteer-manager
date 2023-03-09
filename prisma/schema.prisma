@@ -54,14 +54,16 @@ model FndTime {
 }
 
 model Student {
-  id         Int      @id @default(autoincrement())
-  name       String
-  surName    String
-  middleName String
-  insitution String
-  group      String
-  telNumber  String
-  birthday   DateTime
-  email      String
-  password   String
+  id                 Int      @id @default(autoincrement())
+  name               String
+  surName            String
+  middleName         String
+  insitution         String
+  group              String
+  telNumber          String
+  birthday           DateTime
+  email              String   @unique
+  password           String
+  dateOfRegistration DateTime @default(now())
+  lastActivity       DateTime @default(now())
 }

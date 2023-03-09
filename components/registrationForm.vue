@@ -13,6 +13,10 @@
       </v-btn>
     </template>
     <v-card>
+      <v-form
+          ref="registrationForm"
+
+      >
       <v-card-title>
         Регистрация
       </v-card-title>
@@ -27,6 +31,8 @@
                   label="Имя"
                   hint="Эта информация будет использоваться для написания благодарственных писем"
                   v-model="student.name"
+                  :rules="[required]"
+                  required
               >
               </v-text-field>
             </v-col>
@@ -37,7 +43,10 @@
               <v-text-field
                   label="Фамилия"
                   v-model="student.surName"
-                  hint="Эта информация будет использоваться для написания благодарственных писем">
+                  hint="Эта информация будет использоваться для написания благодарственных писем"
+                  :rules="[required]"
+                  required
+              >
               </v-text-field>
             </v-col>
             <v-col
@@ -47,7 +56,10 @@
               <v-text-field
                   label="Отчество"
                   v-model="student.middleName"
-                  hint="Эта информация будет использоваться для написания благодарственных писем">
+                  hint="Эта информация будет использоваться для написания благодарственных писем"
+                  :rules="[required]"
+                  required
+              >
               </v-text-field>
             </v-col>
             <v-col
@@ -57,7 +69,10 @@
               <v-autocomplete
                   label="Институт"
                   v-model="student.insitution"
-                  :items="institutions">
+                  :items="institutions"
+                  :rules="[required]"
+                  required
+              >
               </v-autocomplete>
             </v-col>
             <v-col
@@ -67,24 +82,37 @@
               <v-autocomplete
                   label="Группа"
                   v-model="student.group"
-                  :items="group">
+                  :rules="[required]"
+                  :items="group"
+                  required
+              >
               </v-autocomplete>
             </v-col>
             <v-col cols="12">
               <v-text-field
                   label="Номер телефона"
                   hint="Эта информация будет использоваться для связи с вами"
-                  placeholder="88005553535"
+                  prefix="8"
+                  placeholder="8005553535"
+                  :rules="[telephone,required]"
                   v-model="student.telNumber"
-                  type="tel">
+                  counter
+                  maxlength="10"
+                  type="tel"
+                  required
+              >
               </v-text-field>
             </v-col>
             <v-col cols="12">
               <v-text-field
                   label="Дата рождения"
                   hint="Эта информация будет использоваться для выбора мероприятий"
-                  v-model="student.birthday"
-                  type="date">
+                  :model-value="student.birthday.getFullYear() + '-' + (student.birthday.getMonth()+1).toString().padStart(2,'0') + '-' + student.birthday.getDate().toString().padStart(2,'0')"
+                  :rules="[birthday]"
+                  type="date"
+                  required
+                  @update:modelValue="value=>student.birthday=new Date(value)"
+              >
               </v-text-field>
             </v-col>
             <v-col cols="12">
@@ -93,20 +121,33 @@
                   hint="Эта информация будет использоваться для восстановления пароля и подверждения данных"
                   type="email"
                   v-model="student.email"
-                  placeholder="test@gmail.com">
+                  :rules="[email,required]"
+                  placeholder="test@gmail.com"
+                  required
+              >
               </v-text-field>
             </v-col>
             <v-col cols="12">
               <v-text-field
                   label="Пароль"
                   v-model="student.password"
-                  type="password">
+                  :rules="[password,required]"
+                  counter
+                  maxlength="20"
+                  type="password"
+                  required
+              >
               </v-text-field>
             </v-col>
             <v-col cols="12">
               <v-text-field
                   label="Повторите пароль"
-                  type="password">
+                  type="password"
+                  counter
+                  maxlength="20"
+                  :rules="[password,required]"
+                  required
+              >
               </v-text-field>
             </v-col>
           </v-row>
@@ -123,19 +164,22 @@
         <v-btn
             color="success"
             variant="outlined"
-            @click="registrationDialog=false">
+            @click="validate">
           Зарегистрироваться
         </v-btn>
       </v-card-actions>
+      </v-form>
     </v-card>
   </v-dialog>
 </template>
 
 <script setup lang="ts">
 import {Student} from "@prisma/client";
-
+import {birthday, email, password, required, telephone} from "~/utils/rules";
+const valid=ref(true)
 const registrationDialog = ref()
-const student: Omit<Student, 'id'> = reactive({
+const registrationForm=ref()
+const student: Omit<Student, 'id'| 'dateOfRegistration'|'lastActivity'> = reactive({
   name: "",
   surName: "",
   middleName: "",
@@ -149,6 +193,14 @@ const student: Omit<Student, 'id'> = reactive({
 
 const institutions = ref(['ИИТК', 'ИКТ'])
 const group = ref(['БИС19-01'])
+
+async function validate() {
+  const {valid} = await registrationForm.value.validate()
+ if (valid) alert('Успешно')
+}
+function toNormalDate(){
+
+}
 </script>
 
 <style scoped lang="scss">

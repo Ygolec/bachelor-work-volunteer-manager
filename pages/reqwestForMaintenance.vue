@@ -36,10 +36,11 @@
             required>
         </v-text-field>
         <v-text-field
-            maxlength="11"
+            maxlength="10"
             v-model="phone"
             label="Номер телефона"
             type="tel"
+            prefix="8"
             :rules="[required,telephone]"
             placeholder="88005553535"
             required
@@ -262,7 +263,7 @@ const items_organizations = ref(['СибГУ им. Решетнева', 'Вол�
 const organizations = ref([items_organizations.value[0]])
 //Контактные данные
 const fio = ref("Чистобаев")
-const phone = ref("89233325700")
+const phone = ref("9233325700")
 const mail = ref("thekevindit@gmail.com")
 const post = ref("Руководитель")
 //Данные по мероприятию
@@ -332,7 +333,7 @@ async function validate() {
     body: reactive({
       organizations,
       fio,
-      phone,
+      phone:"8"+phone.value,
       mail,
       post,
       nameEvent,
