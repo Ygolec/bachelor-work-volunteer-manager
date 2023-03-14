@@ -29,3 +29,7 @@ export function birthday(data:string) {
         return true;
     } else return "Вам должно быть больше 14 лет"
 }
+export function checkSecondPassword(password:string){
+    return (secondPassword:string)=>{if (password==secondPassword)return true ;else return "Пароли не сопадают"}
+
+}

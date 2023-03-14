@@ -1,9 +1,10 @@
 import {PrismaClient, Student} from "@prisma/client";
 import bcrypt from "bcrypt"
 const prisma = new PrismaClient()
+export type StudentRegistration = Omit<Student, 'id' | 'dateOfRegistration' | 'lastActivity' | 'roles'>;
 export default defineEventHandler(async (event) => {
 
-    const body:Omit<Student, 'id'| 'dateOfRegistration'|'lastActivity'> = await readBody(event)
+    const body:StudentRegistration = await readBody(event)
     const saltRounds = 10;
 
     body.password=await bcrypt.hash(body.password, saltRounds);

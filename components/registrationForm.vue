@@ -64,8 +64,8 @@
             </v-col>
             <v-col
                 cols="12"
-                sm="6"
-                md="6">
+                sm="5"
+                md="5">
               <v-autocomplete
                   label="Институт"
                   v-model="student.insitution"
@@ -77,8 +77,8 @@
             </v-col>
             <v-col
                 cols="12"
-                sm="6"
-                md="6">
+                sm="5"
+                md="5">
               <v-autocomplete
                   label="Группа"
                   v-model="student.group"
@@ -87,6 +87,19 @@
                   required
               >
               </v-autocomplete>
+            </v-col>
+            <v-col
+                cols="12"
+                sm="2"
+                md="2">
+              <v-label class="genderLabel text-subtitle-2">Пол</v-label>
+              <v-btn-toggle
+                  class="genderInput"
+                  variant="outlined"
+                  v-model="student.gender">
+                <v-btn value="man">М</v-btn>
+                <v-btn value="woman">Ж</v-btn>
+              </v-btn-toggle>
             </v-col>
             <v-col cols="12">
               <v-text-field
@@ -142,10 +155,11 @@
             <v-col cols="12">
               <v-text-field
                   label="Повторите пароль"
+                  v-model="secondPassword"
                   type="password"
                   counter
                   maxlength="20"
-                  :rules="[password,required]"
+                  :rules="[checkSecondPassword(student.password)]"
                   required
               >
               </v-text-field>
@@ -174,12 +188,12 @@
 </template>
 
 <script setup lang="ts">
-import {Student} from "@prisma/client";
-import {birthday, email, password, required, telephone} from "~/utils/rules";
+import {birthday, checkSecondPassword, email, password, required, telephone} from "~/utils/rules";
+import {StudentRegistration} from "~/server/api/auth/register.post";
 const valid=ref(true)
 const registrationDialog = ref()
 const registrationForm=ref()
-const student: Omit<Student, 'id'| 'dateOfRegistration'|'lastActivity'> = reactive({
+const student:StudentRegistration = reactive({
   name: "",
   surName: "",
   middleName: "",
@@ -189,14 +203,27 @@ const student: Omit<Student, 'id'| 'dateOfRegistration'|'lastActivity'> = reacti
   birthday: new Date(),
   email: "",
   password: "",
+  gender:"man"
 })
-
+const secondPassword=ref()
 const institutions = ref(['ИИТК', 'ИКТ'])
 const group = ref(['БИС19-01'])
+if (student.password==secondPassword.value){
 
+}
 async function validate() {
+
   const {valid} = await registrationForm.value.validate()
- if (valid) alert('Успешно')
+  if (student.password==secondPassword.value){
+
+  }
+ if (valid) {
+   await $fetch('/api/auth/register',
+       {
+         method: 'post',
+         body:student
+       })
+ }
 }
 function toNormalDate(){
 
@@ -204,5 +231,11 @@ function toNormalDate(){
 </script>
 
 <style scoped lang="scss">
-
+.genderInput{
+  margin-top: -15px;
+}
+.genderLabel{
+  position: relative;
+  top: -15px;
+}
 </style>
