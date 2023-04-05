@@ -19,7 +19,7 @@ model VolunteerSupportRequest {
   post              String?
   nameEvent         String
   date              DateTime[]
-  addressEvent      String
+  addressEvent      String[]
   descriptionEvent  String
   quantityVolunteer Int
   skills            String[]
@@ -33,16 +33,19 @@ model Organization {
   id                       Int                       @id @default(autoincrement())
   name                     String                    @unique
   volunteerSupportRequests VolunteerSupportRequest[]
+  event                    Event[]
 }
 
 model Fnd {
   id                       Int                       @id @default(autoincrement())
   nameFND                  String
   dateFND                  DateTime[]
+  addresses                String[]
   times                    FndTime[]
   quantityVolunteerFND     Int
   descriptionFND           String
   volunteerSupportRequests VolunteerSupportRequest[]
+  event                    Event[]
 }
 
 model FndTime {
@@ -68,4 +71,21 @@ model Student {
   lastActivity       DateTime @default(now())
   gender             String
   roles              String[] @default([])
+  Event              Event?   @relation(fields: [eventId], references: [id])
+  eventId            Int?
+}
+
+model Event {
+  id                Int            @id @default(autoincrement())
+  nameEvent         String
+  organizations     Organization[]
+  addressEvent      String[]
+  descriptionEvent  String
+  quantityVolunteer Int
+  skills            String[]
+  clothingVolunteer String
+  ageRestrictions   Int[]
+  fnds              Fnd[]
+  bonuses           String[]
+  students          Student[]
 }

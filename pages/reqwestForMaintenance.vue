@@ -75,12 +75,14 @@
                     multi-dates
                     class="mt-2 mb-4" required>
         </Datepicker>
-        <v-text-field
+        <v-combobox
             label="Адрес мероприятия"
             v-model="addressEvent"
             :rules="[required]"
+            multiple
+            clearable
             required>
-        </v-text-field>
+        </v-combobox>
         <v-textarea label="Описание мероприятия"
                     v-model="descriptionEvent"
                     :rules="[required]"
@@ -138,6 +140,15 @@
               v-model="fnds[index].nameFND"
               required>
           </v-text-field>
+          <v-select
+              label="Адрес ФНД"
+              v-model="fnds[index].address"
+              :rules="[required]"
+              required
+              :items="addressEvent"
+              multiple
+              clearable>
+          </v-select>
           <v-label>Даты работы ФНД</v-label>
           <Datepicker locale="ru" :enable-time-picker="false" v-model="fnds[index].dateFND"
                       @update:model-value="(item)=>checkCountFndTimes(item,fnds[index].times)"
@@ -269,7 +280,7 @@ const post = ref("Руководитель")
 //Данные по мероприятию
 const nameEvent = ref("Написание вкр")
 const date = ref([new Date()])
-const addressEvent = ref("Тута")
+const addressEvent = ref(["Тута"])
 const descriptionEvent = ref("Великое написание описание вкр")
 //Данные по волонтерскому сопровождению
 const quantityVolunteer = ref(25)
@@ -280,12 +291,13 @@ const ageRestrictions = ref([18, 30])
 const numberOfFunctional = ref(0)
 //ФНД
 
-const fnds: Ref<{ nameFND: string, dateFND: Date[], times: Date[][], quantityVolunteerFND: number, descriptionFND: string, getTime: (index: number) => Date[] }[]> = ref([])
+const fnds: Ref<{ nameFND: string, dateFND: Date[],address: string[], times: Date[][], quantityVolunteerFND: number, descriptionFND: string, getTime: (index: number) => Date[] }[]> = ref([])
 watch(numberOfFunctional, (newValue) => {
   for (let i = 0; i < newValue; i++) {
     if (!fnds.value[i]) fnds.value[i] = reactive({
       nameFND: '',
       dateFND: [],
+      address:[],
       times: [] as Date[][],
       getTime(index: number) {
         if (!this.times[index]) this.times[index] = [new Date(), new Date()]
@@ -311,16 +323,19 @@ const form = ref()
 const datepickerFND: Ref<Date[]> = ref([])
 const datepickerTimeFND: Ref<VueDatePicker[]> = ref([])
 const datepickerEvent: Ref<VueDatePicker | undefined> = ref()
+
 //Статус заявки
 
 function returnTime(dates: Date[]) {
-  return dates.map(item=>{
-    return {hours:item.getHours(),minutes:item.getMinutes(),seconds:item.getSeconds()}
+  return dates.map(item => {
+    return {hours: item.getHours(), minutes: item.getMinutes(), seconds: item.getSeconds()}
   })
 }
-function checkCountFndTimes(dates:Date[],times:Date[][]) {
+
+function checkCountFndTimes(dates: Date[], times: Date[][]) {
   times.splice(dates.length)
 }
+
 async function validate() {
   datepickerFND.value.forEach(DatePicker => {
     console.log(DatePicker)
@@ -333,7 +348,7 @@ async function validate() {
     body: reactive({
       organizations,
       fio,
-      phone:"8"+phone.value,
+      phone: "8" + phone.value,
       mail,
       post,
       nameEvent,

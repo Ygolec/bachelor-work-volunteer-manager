@@ -1,10 +1,11 @@
 <template>
 <v-app>
   <v-app-bar class="bg-primary">
-    <NuxtLink to="/authentication">Авторизация</NuxtLink>
-    <NuxtLink to="/reqwestForMaintenance">Форма</NuxtLink>
-    <NuxtLink to="/volunteerEvents">Мероприятия</NuxtLink>
-<!--    <v-btn>Авторизация</v-btn>-->
+    <v-btn
+        v-for="(link,index) in nameOfLinks">
+      <NuxtLink :to="links[index]">{{link}}</NuxtLink>
+    </v-btn>
+      {{email}}
   </v-app-bar>
   <v-main>
     <slot></slot>
@@ -13,9 +14,16 @@
 </template>
 
 <script setup lang="ts">
+import {storeToRefs} from "pinia";
 
+const nameOfLinks=ref(['Авторизация','Форма','Мероприятия'])
+const links=ref(['/authentication','/reqwestForMaintenance','/events'])
+const {email}=storeToRefs(useUserStore())
 </script>
 
 <style scoped lang="scss">
-
+  a{
+    color: white;
+    text-decoration: none;
+  }
 </style>
