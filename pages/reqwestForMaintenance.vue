@@ -297,7 +297,7 @@ watch(numberOfFunctional, (newValue) => {
     if (!fnds.value[i]) fnds.value[i] = reactive({
       nameFND: '',
       dateFND: [],
-      address:[],
+      addresses:[],
       times: [] as Date[][],
       getTime(index: number) {
         if (!this.times[index]) this.times[index] = [new Date(), new Date()]

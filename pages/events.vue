@@ -1,5 +1,6 @@
 <template>
 <create-event/>
+
 </template>
 
 <script setup lang="ts">

@@ -20,7 +20,9 @@
 </template>
 
 <script setup lang="ts">
-const listOfVolunteerRequests = await $fetch('/api/volunteerSupportRequest')
+import {VolunteerSupportRequest} from "@prisma/client";
+
+const listOfVolunteerRequests:VolunteerSupportRequest = await $fetch('/api/volunteerSupportRequest');
 </script>
 
 <style scoped lang="scss">

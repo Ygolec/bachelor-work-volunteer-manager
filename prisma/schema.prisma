@@ -71,8 +71,7 @@ model Student {
   lastActivity       DateTime @default(now())
   gender             String
   roles              String[] @default([])
-  Event              Event?   @relation(fields: [eventId], references: [id])
-  eventId            Int?
+  Event              Event[]
 }
 
 model Event {
@@ -88,4 +87,5 @@ model Event {
   fnds              Fnd[]
   bonuses           String[]
   students          Student[]
+  mainImagePath     String?
 }

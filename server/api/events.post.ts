@@ -1,10 +1,44 @@
 import {PrismaClient} from "@prisma/client";
+import * as formidable from 'formidable';
+import path from "path";
+import {MultiPartData, readMultipartFormData} from "h3";
+import fs from "fs";
+
 
 const prisma = new PrismaClient()
 export default defineEventHandler(async (event) => {
-    const body = await readBody(event)
+    const form: MultiPartData[] = await readMultipartFormData(event) ?? []
+    if (!form) return false
+    let body:any = {}
+    form.forEach(value => {
+        if (!value.filename) {
+            console.log(value.data.toString());
+            // @ts-ignore
+            body[value.name] = JSON.parse(value.data.toString())
+        }
+    })
+    form.forEach(value => {
+        if (value.filename) {
+            const filename = form[0].filename;
+            if (!filename)
+                return 'error'
+            const buffer = Buffer.from(form[0].data)
+            const ext = filename.split('.').at(-1) ?? ''
+            const nameFile = filename
+            const fileSaveDirectory = "./public/upload/images"
+            const pathString = path.join(
+                fileSaveDirectory,
+                body.nameEvent,
+                `${nameFile}`
+            )
+            fs.mkdirSync(path.dirname(pathString), {recursive: true})
+            fs.writeFileSync(pathString, buffer)
+            body.mainImagePath=pathString;
+        }
+    })
 
-    return prisma.volunteerSupportRequest.create({
+
+    return prisma.event.create({
         data: {
             organizations: {
                 connectOrCreate: {
@@ -16,12 +50,7 @@ export default defineEventHandler(async (event) => {
                     }
                 }
             },
-            fio: body.fio,
-            phone: body.phone,
-            mail: body.mail,
-            post: body.post,
             nameEvent: body.nameEvent,
-            date: body.date,
             addressEvent: body.addressEvent,
             descriptionEvent: body.descriptionEvent,
             quantityVolunteer: body.quantityVolunteer,
@@ -43,7 +72,7 @@ export default defineEventHandler(async (event) => {
                     }
                 })
             },
-            statusRequest: "send"
+            mainImagePath:body.mainImagePath
         }
-    });
+    })
 })
