@@ -1,33 +1,8 @@
 <template>
-    <v-snackbar
-        v-model="snackbar"
-        :timeout="timeoutSnackbar"
-    >
-        {{ textSnackbar }}
-
-        <template v-slot:actions>
-            <v-btn
-                color="blue"
-                variant="text"
-                @click="snackbar = false"
-            >
-                Закрыть
-            </v-btn>
-        </template>
-    </v-snackbar>
     <v-dialog
-            v-model="createEventDialog"
+            v-model="props.editEventDialog"
             persistent
             width="1024">
-        <template v-slot:activator="{ props }">
-            <v-btn
-                    color="primary"
-                    class="flex-grow-1"
-                    v-bind="props"
-            >
-                Создать мероприятие
-            </v-btn>
-        </template>
         <v-card>
             <v-form>
                 <v-card-title>
@@ -36,15 +11,7 @@
                                 cols="12"
                                 sm="6"
                                 md="7">
-                            Создание мероприятия
-                        </v-col>
-                        <v-col
-                                cols="12"
-                                sm="6"
-                                md="5">
-                            <v-select
-                                    label="Импорт заявок">
-                            </v-select>
+                            Изменение мероприятия {{ props.event.nameEvent }}
                         </v-col>
                     </v-row>
                 </v-card-title>
@@ -66,10 +33,25 @@
                                         :items="items_organizations"
                                         multiple
                                 ></v-combobox>
+                                <v-dialog
+                                v-model="imageShowDialog"
+                                >
+                                            <div class="d-flex justify-center" @click="imageShowDialog=false">
+                                                <img
+                                                    :src="props.event.mainImagePath" style="width: 1000px">
+                                            </div>
+
+                                </v-dialog>
+
+                                <div class="d-flex">
                                 <v-file-input
                                         show-size
                                         label="Изображение мероприятия"
                                         v-model="mainImage"></v-file-input>
+                                <v-btn
+                                icon='mdi-eye-outline'
+                                @click="imageShowDialog=true"></v-btn>
+                                </div>
                                 <v-combobox
                                         label="Адрес мероприятия"
                                         v-model="addressEvent"
@@ -163,12 +145,12 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-btn
-                        color="success"
-                        @click="createEvent()">Создать мероприятие
+                            color="success"
+                            @click="updateEvent()">Изменить мероприятие
                     </v-btn>
                     <v-btn
-                        color="accent"
-                            @click="closeDialog()">Отменить создание
+                            color="accent"
+                            @click="emit('close')">Отменить изменение
                     </v-btn>
                 </v-card-actions>
             </v-form>
@@ -178,41 +160,41 @@
 </template>
 
 <script setup lang="ts">
-
 import {required} from "~/utils/rules";
 import Datepicker from "@vuepic/vue-datepicker";
 import {Ref} from "vue";
 
+const imageShowDialog=ref(false)
 const emit = defineEmits<{
-    (e: 'successCreate'): void
+    (e: 'close'): void
 }>()
 
-const createEventDialog = ref()
-const snackbar=ref(false)
-const textSnackbar=ref('Мероприятие создано!')
-const timeoutSnackbar:Ref<number>=ref(2000)
-/**
- * Данные по мероприятию
- */
-const nameEvent = ref("")
-const organizations = ref([])
+const props = defineProps<{
+    editEventDialog: boolean,
+    event: any
+}>()
+
+const nameEvent = ref(props.event.nameEvent)
+const organizations = ref(props.event.organizations.map((org: any) => {
+    return org.name
+}))
 const items_organizations = ref(['СибГУ им. Решетнева', 'Волонтерский центр СибГУ'])
-const addressEvent = ref([])
+const addressEvent = ref(props.event.addressEvent)
 const mainImage = ref()
-const descriptionEvent = ref("")
+const descriptionEvent = ref(props.event.descriptionEvent)
 const date = ref([new Date()])
 /**
  * Данные по волонтерам
  */
-const quantityVolunteer = ref()
+const quantityVolunteer = ref(props.event.quantityVolunteer)
 const items_skills = ref([''])
-const skills = ref([])
-const clothingVolunteer = ref("")
-const ageRestrictions = ref([18, 30])
+const skills = ref(props.event.skills)
+const clothingVolunteer = ref(props.event.clothingVolunteer)
+const ageRestrictions = ref(props.event.ageRestrictions)
 /**
  * ФНД
  */
-const numberOfFunctional = ref(0)
+const numberOfFunctional = ref(props.event.fnds.length)
 const fnds: Ref<{
     nameFND: string,
     dateFND: Date[],
@@ -221,7 +203,22 @@ const fnds: Ref<{
     quantityVolunteerFND: number,
     descriptionFND: string,
     getTime: (index: number) => Date[]
-}[]> = ref([])
+}[]> = ref(props.event.fnds.map(function (fnd: any, index: number) {
+    return {
+        nameFND: fnd.nameFND,
+        dateFND: fnd.dateFND,
+        addresses: fnd.addresses,
+        times: fnd.times.map((time: any) => {
+            return [new Date(time.start), new Date(time.end)]
+        }),
+        quantityVolunteerFND: fnd.quantityVolunteerFND,
+        descriptionFND: fnd.descriptionFND,
+        getTime(index: number) {
+            if (!this.times[index]) this.times[index] = [new Date(), new Date()]
+            return this.times[index]
+        }
+    }
+}))
 
 
 watch(numberOfFunctional, (newValue) => {
@@ -242,9 +239,6 @@ watch(numberOfFunctional, (newValue) => {
     fnds.value.splice(newValue)
 }, {immediate: true})
 
-
-//Статус заявки
-
 function returnTime(dates: Date[]) {
     return dates.map(item => {
         return {hours: item.getHours(), minutes: item.getMinutes(), seconds: item.getSeconds()}
@@ -255,33 +249,11 @@ function checkCountFndTimes(dates: Date[], times: Date[][]) {
     times.splice(dates.length)
 }
 
-async function createEvent() {
-    const formData = new FormData()
-    formData.set('mainImage', mainImage.value[0]);
-    formData.set('nameEvent', JSON.stringify(nameEvent.value));
-    formData.set('organizations', JSON.stringify(organizations.value));
-    formData.set('addressEvent', JSON.stringify(addressEvent.value));
-    formData.set('descriptionEvent', JSON.stringify(descriptionEvent.value));
-    formData.set('quantityVolunteer', JSON.stringify(quantityVolunteer.value));
-    formData.set('skills', JSON.stringify(skills.value));
-    formData.set('clothingVolunteer', JSON.stringify(clothingVolunteer.value));
-    formData.set('ageRestrictions', JSON.stringify(ageRestrictions.value));
-    formData.set('fnds', JSON.stringify(fnds.value));
-
-
-    await $fetch('/api/event/create', {
-        method: "post",
-        body:formData
-    });
-
-    emit('successCreate')
-    closeDialog()
-    snackbar.value=true
+function updateEvent() {
 
 }
-function closeDialog() {
-    createEventDialog.value=false;
-}
+
+
 </script>
 
 <style scoped lang="scss">

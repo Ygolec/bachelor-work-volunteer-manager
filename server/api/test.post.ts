@@ -1,5 +1,5 @@
 import {PrismaClient} from "@prisma/client";
-import * as formidable from 'formidable';
+
 import path from "path";
 import {MultiPartData, readMultipartFormData} from "h3";
 import * as fs from "fs";

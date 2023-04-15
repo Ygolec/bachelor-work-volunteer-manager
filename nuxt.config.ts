@@ -12,8 +12,7 @@ export default defineNuxtConfig({
         },
     },
     modules: ['@pinia/nuxt',
-        '@vueuse/nuxt',
-        'formidable',],
+        '@vueuse/nuxt',],
     runtimeConfig: {
         secretKey: ""
     },

@@ -1,5 +1,5 @@
 import {PrismaClient} from "@prisma/client";
-import * as formidable from 'formidable';
+
 import path from "path";
 import {MultiPartData, readMultipartFormData} from "h3";
 import fs from "fs";
@@ -9,7 +9,7 @@ const prisma = new PrismaClient()
 export default defineEventHandler(async (event) => {
     const form: MultiPartData[] = await readMultipartFormData(event) ?? []
     if (!form) return false
-    let body:any = {}
+    let body: any = {}
     form.forEach(value => {
         if (!value.filename) {
             console.log(value.data.toString());
@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
             const buffer = Buffer.from(form[0].data)
             const ext = filename.split('.').at(-1) ?? ''
             const nameFile = filename
-            const fileSaveDirectory = "./public/upload/images"
+            const fileSaveDirectory = "./public/upload/images/events"
             const pathString = path.join(
                 fileSaveDirectory,
                 body.nameEvent,
@@ -33,23 +33,13 @@ export default defineEventHandler(async (event) => {
             )
             fs.mkdirSync(path.dirname(pathString), {recursive: true})
             fs.writeFileSync(pathString, buffer)
-            body.mainImagePath=pathString;
+            body.mainImagePath = pathString.replace(/^public\\/,'');
         }
     })
 
 
-    return prisma.event.create({
+    const createdEvent= await prisma.event.create({
         data: {
-            organizations: {
-                connectOrCreate: {
-                    create: {
-                        name: body.organizations[0]
-                    },
-                    where: {
-                        name: body.organizations[0]
-                    }
-                }
-            },
             nameEvent: body.nameEvent,
             addressEvent: body.addressEvent,
             descriptionEvent: body.descriptionEvent,
@@ -72,7 +62,32 @@ export default defineEventHandler(async (event) => {
                     }
                 })
             },
-            mainImagePath:body.mainImagePath
+            mainImagePath: body.mainImagePath
         }
     })
+     Promise.all(body.organizations.map(async (org: string) => {
+         return prisma.event.update({
+             where: {
+                 id: createdEvent.id,
+             },
+             data: {
+                 organizations: {
+                     connectOrCreate: {
+                         create: {
+                             name: org
+                         },
+                         where: {
+                             name: org
+                         }
+                     }
+                 }
+             }
+         });
+     }))
+    const findOrg=await prisma.event.findUnique({
+        where:{
+            id:createdEvent.id
+        }
+    })
+    return findOrg
 })

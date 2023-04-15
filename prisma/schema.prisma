@@ -37,22 +37,24 @@ model Organization {
 }
 
 model Fnd {
-  id                       Int                       @id @default(autoincrement())
-  nameFND                  String
-  dateFND                  DateTime[]
-  addresses                String[]
-  times                    FndTime[]
-  quantityVolunteerFND     Int
-  descriptionFND           String
-  volunteerSupportRequests VolunteerSupportRequest[]
-  event                    Event[]
+  id                        Int                      @id @default(autoincrement())
+  nameFND                   String
+  dateFND                   DateTime[]
+  addresses                 String[]
+  times                     FndTime[]
+  quantityVolunteerFND      Int
+  descriptionFND            String
+  volunteerSupportRequests  VolunteerSupportRequest? @relation(fields: [volunteerSupportRequestId], references: [id], onDelete: Cascade)
+  event                     Event                    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId                   Int
+  volunteerSupportRequestId Int?
 }
 
 model FndTime {
   id    Int      @id @default(autoincrement())
   start DateTime
   end   DateTime
-  fnd   Fnd      @relation(fields: [fndId], references: [id])
+  fnd   Fnd      @relation(fields: [fndId], references: [id], onDelete: Cascade)
   fndId Int
 }
 
@@ -71,7 +73,7 @@ model Student {
   lastActivity       DateTime @default(now())
   gender             String
   roles              String[] @default([])
-  Event              Event[]
+  events             Event[]
 }
 
 model Event {
@@ -88,4 +90,10 @@ model Event {
   bonuses           String[]
   students          Student[]
   mainImagePath     String?
+}
+
+enum Role {
+  USER
+  ADMIN
+  TEAMLEADER
 }

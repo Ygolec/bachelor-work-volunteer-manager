@@ -16,8 +16,8 @@
 <script setup lang="ts">
 import {storeToRefs} from "pinia";
 
-const nameOfLinks=ref(['Авторизация','Форма','Мероприятия'])
-const links=ref(['/authentication','/reqwestForMaintenance','/events'])
+const nameOfLinks=ref(['Авторизация','Форма','Мероприятия','Администрирование'])
+const links=ref(['/authentication','/reqwestForMaintenance','/events','/adminPanel'])
 const {email}=storeToRefs(useUserStore())
 </script>
 
