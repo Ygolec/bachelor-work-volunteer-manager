@@ -48,16 +48,17 @@
             <v-icon
                 size="small"
                 class="me-2"
-                @click="dialogEdit=true"
+                @click="editEvent(item.raw)"
             >
                 mdi-pencil
-            </v-icon>
-            <event-edit
-            :edit-event-dialog="dialogEdit"
-            :event="item.raw"
-            @close="dialogEdit=false"
-            />
 
+            </v-icon>
+
+            <event-edit v-if="itemForEdit!=null && dialogEdit"
+                :edit-event-dialog="dialogEdit"
+                :event="itemForEdit"
+                @close="dialogEdit=false"
+            />
             <v-icon
                     size="small"
                     @click="deleteEvent(item.raw)"
@@ -66,7 +67,7 @@
             </v-icon>
             <confirm-dialog @close="dialogDelete=false"
                             :confirm-dialog="dialogDelete"
-                            @confirm="deleteItemConfirm(item.raw.id,item.raw.nameEvent)">
+                            @confirm="deleteItemConfirm()">
                 {{ text }} ?
             </confirm-dialog>
         </template>
@@ -94,24 +95,26 @@ const dataHeaders = ref([
 ])
 
 const {data:itemsOfEvent,pending,refresh} = await useFetch("/api/event/get");
-
+const itemForEdit=ref()
 function editEvent(item: any) {
+    itemForEdit.value=item;
     dialogEdit.value=true;
 }
-
+const itemForDelete=ref()
 function deleteEvent(item: any) {
+    itemForDelete.value=item;
     dialogDelete.value = true;
    text.value="Вы точно хотите удалить " + item.nameEvent;
 }
 
-async function deleteItemConfirm(idForDelete: number,nameEvent:string) {
+async function deleteItemConfirm() {
     await $fetch('/api/event/delete', {
         method: "delete",
-        body: {id: idForDelete}
+        body: {id: itemForDelete.value.id}
     });
     refresh()
     dialogDelete.value = false;
-    textSnackbar.value="Мероприятие " + nameEvent + " удалено!"
+    textSnackbar.value="Мероприятие " + itemForDelete.value.name + " удалено!"
     snackbar.value=true
 }
 </script>

@@ -48,6 +48,8 @@
 </template>
 
 <script setup lang="ts">
+import DataTableOrganizations from "~/components/organizations/dataTableOrganizations.vue";
+
 const menu=ref(0)
 </script>
 

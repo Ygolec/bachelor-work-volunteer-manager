@@ -174,6 +174,7 @@ const props = defineProps<{
     event: any
 }>()
 
+
 const nameEvent = ref(props.event.nameEvent)
 const organizations = ref(props.event.organizations.map((org: any) => {
     return org.name
