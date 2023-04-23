@@ -49,6 +49,7 @@
 
 <script setup lang="ts">
 import DataTableOrganizations from "~/components/organizations/dataTableOrganizations.vue";
+import DataTableEvents from "~/components/events/dataTableEvents.vue";
 
 const menu=ref(0)
 </script>

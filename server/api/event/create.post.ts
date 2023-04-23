@@ -4,7 +4,6 @@ import path from "path";
 import {MultiPartData, readMultipartFormData} from "h3";
 import fs from "fs";
 
-
 const prisma = new PrismaClient()
 export default defineEventHandler(async (event) => {
     const form: MultiPartData[] = await readMultipartFormData(event) ?? []
@@ -12,7 +11,7 @@ export default defineEventHandler(async (event) => {
     let body: any = {}
     form.forEach(value => {
         if (!value.filename) {
-            console.log(value.data.toString());
+            // console.log(value.data.toString());
             // @ts-ignore
             body[value.name] = JSON.parse(value.data.toString())
         }
@@ -37,7 +36,8 @@ export default defineEventHandler(async (event) => {
         }
     })
 
-
+    console.log("ДАТАААААААААААААААААА"+body.date);
+    // console.log(body);
     const createdEvent= await prisma.event.create({
         data: {
             nameEvent: body.nameEvent,
@@ -47,6 +47,7 @@ export default defineEventHandler(async (event) => {
             skills: body.skills,
             clothingVolunteer: body.clothingVolunteer,
             ageRestrictions: body.ageRestrictions,
+            date:body.date,
             fnds: {
                 create: body.fnds.map((item: { times: any; }) => {
                     return {
@@ -89,5 +90,5 @@ export default defineEventHandler(async (event) => {
             id:createdEvent.id
         }
     })
-    return findOrg
+    return 'ok'
 })

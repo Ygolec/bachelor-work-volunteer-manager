@@ -77,6 +77,9 @@
 <script setup lang="ts">
 import ConfirmDialog from "~/components/confirmDialog.vue";
 import {Ref} from "vue";
+import EventEdit from "~/components/events/eventEdit.vue";
+import CreateEvent from "~/components/events/createEvent.vue";
+
 
 const snackbar=ref(false)
 const textSnackbar=ref()

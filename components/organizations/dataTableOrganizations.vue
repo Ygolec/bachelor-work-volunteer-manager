@@ -42,11 +42,14 @@
                         <v-icon
                                 size="small"
                                 class="me-2"
-                                @click="dialogEdit=true"
+                                @click="editEvent(item.raw)"
                         >
                             mdi-pencil
                         </v-icon>
-
+                        <edit-organization-dialog v-if="itemForEdit!=null && dialogEdit "
+                        :edit-organizationdialog="dialogEdit"
+                        :organization="itemForEdit"
+                        @close="dialogEdit=false;refresh()"/>
                         <v-icon
                                 size="small"
                                 @click="deleteEvent(item.raw)"
@@ -65,6 +68,7 @@
 <script setup lang="ts">
 import {Ref} from "vue";
 import CreateOrganizationDialog from "~/components/organizations/CreateOrganizationDialog.vue";
+import EditOrganizationDialog from "~/components/organizations/editOrganizationDialog.vue";
 
 const snackbar=ref(false)
 const textSnackbar=ref()
@@ -79,6 +83,12 @@ const dataHeaders = ref([
 ])
 
 const {data:itemsOfEvent,pending,refresh} = await useFetch("/api/organizations/get");
+
+const itemForEdit=ref()
+function editEvent(item: any) {
+    itemForEdit.value=item;
+    dialogEdit.value=true;
+}
 
 const itemForDelete=ref()
 function deleteEvent(item: any) {

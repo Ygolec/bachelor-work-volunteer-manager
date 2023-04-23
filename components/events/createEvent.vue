@@ -78,6 +78,11 @@
                                 <v-text-field
                                         label="Описание мероприятия"
                                         v-model="descriptionEvent"></v-text-field>
+                                <v-label>Дата мероприятия</v-label>
+                                <Datepicker ref="datepickerEvent" locale="ru" :enable-time-picker="false" v-model="date"
+                                            multi-dates
+                                            class="mt-2 mb-4" required>
+                                </Datepicker>
                                 <v-list>
                                     <v-list-subheader>Данные по волонтерам</v-list-subheader>
                                     <v-divider></v-divider>
@@ -267,6 +272,7 @@ async function createEvent() {
     formData.set('clothingVolunteer', JSON.stringify(clothingVolunteer.value));
     formData.set('ageRestrictions', JSON.stringify(ageRestrictions.value));
     formData.set('fnds', JSON.stringify(fnds.value));
+    formData.set('date',JSON.stringify(date.value));
 
 
     await $fetch('/api/event/create', {

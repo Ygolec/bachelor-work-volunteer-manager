@@ -79,6 +79,7 @@ model Student {
 model Event {
   id                Int            @id @default(autoincrement())
   nameEvent         String
+  date              DateTime[]
   organizations     Organization[]
   addressEvent      String[]
   descriptionEvent  String

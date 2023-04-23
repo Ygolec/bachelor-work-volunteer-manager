@@ -34,29 +34,34 @@
                                         multiple
                                 ></v-combobox>
                                 <v-dialog
-                                v-model="imageShowDialog"
+                                        v-model="imageShowDialog"
                                 >
-                                            <div class="d-flex justify-center" @click="imageShowDialog=false">
-                                                <img
-                                                    :src="props.event.mainImagePath" style="width: 1000px">
-                                            </div>
+                                    <div class="d-flex justify-center" @click="imageShowDialog=false">
+                                        <img
+                                                :src="props.event.mainImagePath" style="width: 1000px">
+                                    </div>
 
                                 </v-dialog>
 
                                 <div class="d-flex">
-                                <v-file-input
-                                        show-size
-                                        label="Изображение мероприятия"
-                                        v-model="mainImage"></v-file-input>
-                                <v-btn
-                                icon='mdi-eye-outline'
-                                @click="imageShowDialog=true"></v-btn>
+                                    <v-file-input
+                                            show-size
+                                            label="Изображение мероприятия"
+                                            v-model="mainImage"></v-file-input>
+                                    <v-btn
+                                            icon='mdi-eye-outline'
+                                            @click="imageShowDialog=true"></v-btn>
                                 </div>
                                 <v-combobox
                                         label="Адрес мероприятия"
                                         v-model="addressEvent"
                                         multiple
                                         clearable></v-combobox>
+                                <v-label>Дата мероприятия</v-label>
+                                <Datepicker ref="datepickerEvent" locale="ru" :enable-time-picker="false" v-model="date"
+                                            multi-dates
+                                            class="mt-2 mb-4" required>
+                                </Datepicker>
                                 <v-text-field
                                         label="Описание мероприятия"
                                         v-model="descriptionEvent"></v-text-field>
@@ -96,13 +101,13 @@
                                         tool-tip="Описание что такое ФНД">
                                 </number-imput>
                                 <div v-for="(n,index) in numberOfFunctional">
-                                    <v-list-subheader>
-                                        ФНД № {{ n }}
-                                    </v-list-subheader>
                                     <v-text-field
                                             label="Название ФНД"
                                             v-model="fnds[index].nameFND"
                                             required>
+                                        <v-list-subheader>
+                                            ФНД № {{ n }}
+                                        </v-list-subheader>
                                     </v-text-field>
                                     <v-select
                                             label="Адрес ФНД"
@@ -163,8 +168,9 @@
 import {required} from "~/utils/rules";
 import Datepicker from "@vuepic/vue-datepicker";
 import {Ref} from "vue";
+import {en} from "vuetify/locale";
 
-const imageShowDialog=ref(false)
+const imageShowDialog = ref(false)
 const emit = defineEmits<{
     (e: 'close'): void
 }>()
@@ -174,7 +180,7 @@ const props = defineProps<{
     event: any
 }>()
 
-
+const eventId = ref(props.event.id)
 const nameEvent = ref(props.event.nameEvent)
 const organizations = ref(props.event.organizations.map((org: any) => {
     return org.name
@@ -183,7 +189,7 @@ const items_organizations = ref(['СибГУ им. Решетнева', 'Вол�
 const addressEvent = ref(props.event.addressEvent)
 const mainImage = ref()
 const descriptionEvent = ref(props.event.descriptionEvent)
-const date = ref([new Date()])
+const date = ref(props.event.date)
 /**
  * Данные по волонтерам
  */
@@ -206,6 +212,7 @@ const fnds: Ref<{
     getTime: (index: number) => Date[]
 }[]> = ref(props.event.fnds.map(function (fnd: any, index: number) {
     return {
+        id:fnd.id,
         nameFND: fnd.nameFND,
         dateFND: fnd.dateFND,
         addresses: fnd.addresses,
@@ -250,8 +257,38 @@ function checkCountFndTimes(dates: Date[], times: Date[][]) {
     times.splice(dates.length)
 }
 
-function updateEvent() {
+async function updateEvent() {
+    const localFnds = fnds.value.map(item => {
+        return {
+            ...item,
+            times: item.times.map(time => {
+                return {
+                    start: time[0],
+                    end: time[1]
+                }
+            })
+        }
+    })
+    const formData = new FormData()
+    if (mainImage.value) {
+        formData.set('mainImagePath', mainImage.value[0]);
+    } else formData.set('mainImagePath', JSON.stringify(props.event.mainImagePath));
+    formData.set('nameEvent', JSON.stringify(nameEvent.value));
+    formData.set('eventId', JSON.stringify(eventId.value));
+    formData.set('organizations', JSON.stringify(organizations.value));
+    formData.set('addressEvent', JSON.stringify(addressEvent.value));
+    formData.set('descriptionEvent', JSON.stringify(descriptionEvent.value));
+    formData.set('quantityVolunteer', JSON.stringify(quantityVolunteer.value));
+    formData.set('skills', JSON.stringify(skills.value));
+    formData.set('clothingVolunteer', JSON.stringify(clothingVolunteer.value));
+    formData.set('ageRestrictions', JSON.stringify(ageRestrictions.value));
+    formData.set('fnds', JSON.stringify(localFnds));
+    formData.set('date', JSON.stringify(date.value));
 
+    await $fetch('/api/event/update', {
+        method: "put",
+        body: formData
+    });
 }
 
 
