@@ -22,7 +22,7 @@
 <script setup lang="ts">
 import {VolunteerSupportRequest} from "@prisma/client";
 
-const listOfVolunteerRequests:VolunteerSupportRequest = await $fetch('/api/volunteerSupportRequest');
+const listOfVolunteerRequests:VolunteerSupportRequest = await $fetch('/api/volunteerSupport/request');
 </script>
 
 <style scoped lang="scss">

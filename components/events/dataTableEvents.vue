@@ -39,7 +39,7 @@
             </v-toolbar>
         </template>
         <template v-slot:item.organizations="{ item }">
-            {{item.raw}}
+
             <v-chip v-for="org in item.props.title.organizations" :key="org.id">
                 {{ org.name }}
             </v-chip>

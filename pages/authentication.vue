@@ -47,12 +47,15 @@
 </template>
 
 <script setup lang="ts">
+
 const email = ref("")
 const password = ref("")
 const organizations = ref();
 
+
+
 function login(){
-    useUserStore().login(email.value,password.value)
+        useUserStore().login(email.value,password.value)
 }
 </script>
 

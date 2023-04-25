@@ -18,15 +18,15 @@ export default defineEventHandler(async (event) => {
     if (!body.password || !body.email){
         throw createError({
             statusCode:400,
-            statusMessage:"Email и пароль обязательны"
+            statusMessage:"Email and password are required"
         })
     }
     const user = await prisma.student.findUnique({where:{email:body.email}});
 
     if (!user){
         throw createError({
-            statusCode:401,
-            statusMessage:"Неверный email или пароль"
+            statusCode:403,
+            statusMessage:"Invalid email or password"
         })
     }
 
@@ -34,8 +34,8 @@ export default defineEventHandler(async (event) => {
 
     if (!isPasswordValid){
         throw createError({
-            statusCode:401,
-            statusMessage:"Неверный email или пароль"
+            statusCode:403,
+            statusMessage:"Invalid email or password"
         })
     }
 

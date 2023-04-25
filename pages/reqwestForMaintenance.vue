@@ -343,7 +343,7 @@ async function validate() {
 
   /* const {valid} = await form.value.validate()*/
   /*if (valid) {*/
-  await $fetch('/api/volunteerSupportRequest', {
+  await $fetch('/api/volunteerSupport/request', {
     method: 'post',
     body: reactive({
       organizations,
