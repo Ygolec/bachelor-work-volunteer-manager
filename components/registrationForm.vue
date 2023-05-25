@@ -85,6 +85,7 @@
                   :rules="[required]"
                   :items="group"
                   required
+                  @update:search="getGroup()"
               >
               </v-autocomplete>
             </v-col>
@@ -222,11 +223,20 @@ async function validate() {
        {
          method: 'post',
          body:student
-       })
+       }).then(
+       registrationDialog.value=false
+   )
  }
 }
-function toNormalDate(){
-
+async function getGroup() {
+  await $fetch('https://timetable.pallada.sibsau.ru/ajax/search_schedule', {
+    method: "post",
+   body:{
+     id: 717228144,
+     jsonrpc: "2.0",
+     method: "call",
+      params:{query:'БИС'}}
+  });
 }
 </script>
 

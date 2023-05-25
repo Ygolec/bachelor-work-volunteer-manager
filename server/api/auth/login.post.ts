@@ -45,8 +45,9 @@ export default defineEventHandler(async (event) => {
     return {
         token,
         user: {
+            name:  user.surName+' '+user.name+' '+user.middleName,
             email: user.email,
-            roles: user.roles
+            roles: user.roles.toString()
         }
     };
 })

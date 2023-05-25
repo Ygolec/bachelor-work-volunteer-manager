@@ -36,7 +36,7 @@ export default defineEventHandler(async (event) => {
         }
     })
 
-    console.log("ДАТАААААААААААААААААА"+body.date);
+
     // console.log(body);
     const createdEvent= await prisma.event.create({
         data: {
@@ -48,6 +48,8 @@ export default defineEventHandler(async (event) => {
             clothingVolunteer: body.clothingVolunteer,
             ageRestrictions: body.ageRestrictions,
             date:body.date,
+            type:body.typeEvent,
+            level:body.levelEvent,
             fnds: {
                 create: body.fnds.map((item: { times: any; }) => {
                     return {

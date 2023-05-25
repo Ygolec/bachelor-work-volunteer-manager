@@ -37,17 +37,19 @@ model Organization {
 }
 
 model Fnd {
-  id                        Int                      @id @default(autoincrement())
-  nameFND                   String
-  dateFND                   DateTime[]
-  addresses                 String[]
-  times                     FndTime[]
-  quantityVolunteerFND      Int
-  descriptionFND            String
-  volunteerSupportRequests  VolunteerSupportRequest? @relation(fields: [volunteerSupportRequestId], references: [id], onDelete: Cascade)
-  event                     Event                    @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  eventId                   Int
-  volunteerSupportRequestId Int?
+  id                                    Int                                     @id @default(autoincrement())
+  nameFND                               String
+  dateFND                               DateTime[]
+  addresses                             String[]
+  times                                 FndTime[]
+  quantityVolunteerFND                  Int
+  descriptionFND                        String
+  volunteerSupportRequests              VolunteerSupportRequest?                @relation(fields: [volunteerSupportRequestId], references: [id], onDelete: Cascade)
+  event                                 Event?                                  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId                               Int?
+  volunteerSupportRequestId             Int?
+  ApplicationForParticipationInTheEvent ApplicationForParticipationInTheEvent[]
+  StatsOfVolunteer                      StatsOfVolunteer[]
 }
 
 model FndTime {
@@ -59,42 +61,87 @@ model FndTime {
 }
 
 model Student {
-  id                 Int      @id @default(autoincrement())
-  name               String
-  surName            String
-  middleName         String
-  insitution         String
-  group              String
-  telNumber          String
-  birthday           DateTime
-  email              String   @unique
-  password           String
-  dateOfRegistration DateTime @default(now())
-  lastActivity       DateTime @default(now())
-  gender             String
-  roles              String[] @default([])
-  events             Event[]
+  id                                    Int                                     @id @default(autoincrement())
+  name                                  String
+  surName                               String
+  middleName                            String
+  insitution                            String
+  group                                 String
+  telNumber                             String
+  birthday                              DateTime
+  email                                 String                                  @unique
+  password                              String
+  dateOfRegistration                    DateTime                                @default(now())
+  lastActivity                          DateTime                                @default(now())
+  gender                                String
+  roles                                 Role[]                                  @default([USER])
+  events                                Event[]
+  ApplicationForParticipationInTheEvent ApplicationForParticipationInTheEvent[]
+  StatsOfVolunteer                      StatsOfVolunteer[]
 }
 
 model Event {
-  id                Int            @id @default(autoincrement())
-  nameEvent         String
-  date              DateTime[]
-  organizations     Organization[]
-  addressEvent      String[]
-  descriptionEvent  String
-  quantityVolunteer Int
-  skills            String[]
-  clothingVolunteer String
-  ageRestrictions   Int[]
-  fnds              Fnd[]
-  bonuses           String[]
-  students          Student[]
-  mainImagePath     String?
+  id                                    Int                                     @id @default(autoincrement())
+  nameEvent                             String
+  date                                  DateTime[]
+  organizations                         Organization[]
+  addressEvent                          String[]
+  descriptionEvent                      String
+  quantityVolunteer                     Int
+  skills                                String[]
+  clothingVolunteer                     String
+  ageRestrictions                       Int[]
+  fnds                                  Fnd[]
+  bonuses                               String[]
+  mainImagePath                         String?
+  ApplicationForParticipationInTheEvent ApplicationForParticipationInTheEvent[]
+  status                                EventStatus                             @default(OPEN)
+  visibility                            Boolean                                 @default(false)
+  teamleaders                           Student[]
+  level                                 String
+  type                                  String
+}
+
+model ApplicationForParticipationInTheEvent {
+  id        Int               @id @default(autoincrement())
+  student   Student           @relation(fields: [studentId], references: [id])
+  event     Event             @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  fnds      Fnd               @relation(fields: [fndId], references: [id])
+  studentId Int
+  eventId   Int
+  status    ApplicationStatus
+  fndId     Int
+
+  @@unique([studentId, eventId, fndId])
 }
 
 enum Role {
   USER
   ADMIN
   TEAMLEADER
+}
+
+enum EventStatus {
+  OPEN
+  CLOSE
+  COMPLETED
+}
+
+enum ApplicationStatus {
+  SEND
+  ACCEPT
+  REJECTED
+  RESERVE
+  GHOSTED
+}
+
+model StatsOfVolunteer {
+  id            Int     @id @default(autoincrement())
+  student       Student @relation(fields: [studentId], references: [id])
+  fnd           Fnd     @relation(fields: [fndId], references: [id], onDelete: Cascade)
+  numberOfHours Int
+  rating        Float
+  comment       String?
+  studentId     Int
+  fndId         Int
 }

@@ -5,6 +5,7 @@
             v-model="mainImage"></v-file-input>
     <v-btn
     @click="sendImage()"></v-btn>
+
 </template>
 
 <script setup lang="ts">

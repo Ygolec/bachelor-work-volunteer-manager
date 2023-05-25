@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
             organizations:true,
             fnds:{
                 include:{
-                    times: true
+                    times: true,
                 }
             }
         }

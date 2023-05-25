@@ -1,4 +1,4 @@
-import {Fnd, FndTime, PrismaClient} from "@prisma/client";
+import  {PrismaClient} from "@prisma/client";
 
 import path from "path";
 import {MultiPartData, readMultipartFormData} from "h3";
@@ -51,32 +51,11 @@ export default defineEventHandler(async (event) => {
             clothingVolunteer: body.clothingVolunteer,
             ageRestrictions: body.ageRestrictions,
             mainImagePath: body.mainImagePath,
-            date:body.date
+            date:body.date,
+            type:body.typeEvent,
+            level:body.levelEvent,
         }
     })
-    Promise.all(body.fnds.map(async (item: Fnd & { times: FndTime[] }) => {
-        const {times,...fnd}=item
-            return prisma.fnd.upsert({
-                create: {
-                    ...item,
-                    eventId: createdEvent.id,
-                    times: {
-                        create: item.times.map((time) => {
-                            return {
-                                ...time
-                            }
-                        })
-                    }
-                },
-                update: {
-                    ...fnd
-                },
-                where: {
-                    id:item.id ?? -1
-                }
-            });
-        })
-    )
     Promise.all(body.organizations.map(async (org: string) => {
         return prisma.event.update({
             where: {

@@ -142,7 +142,7 @@
           </v-text-field>
           <v-select
               label="Адрес ФНД"
-              v-model="fnds[index].address"
+              v-model="fnds[index].addresses"
               :rules="[required]"
               required
               :items="addressEvent"
@@ -170,96 +170,96 @@
               :rules="[required]"
               required>
           </v-text-field>
-          <v-text-field
+          <v-textarea
               v-model="fnds[index].descriptionFND"
               label="Описание работы" :rules="[required]" required>
-          </v-text-field>
+          </v-textarea>
         </div>
-        <v-row>
-          <v-col
-              cols="12"
-              sm="6">
+<!--        <v-row>-->
+<!--          <v-col-->
+<!--              cols="12"-->
+<!--              sm="6">-->
 
-            <v-card>
-              <v-card-subtitle>Возможность поощрения волонтёров</v-card-subtitle>
-              <v-radio-group v-model="tyLetter">
-                <v-radio label="Нет" value="true"></v-radio>
-                <div class="d-flex align-center">
-                  <v-text-field :readonly="tyLetter" class="mr-4">
-                    <template #prepend>
-                      <v-radio label="Есть" :value="false">
-                      </v-radio>
-                    </template>
-                  </v-text-field>
-                </div>
-              </v-radio-group>
-            </v-card>
+<!--            <v-card>-->
+<!--              <v-card-subtitle>Возможность поощрения волонтёров</v-card-subtitle>-->
+<!--              <v-radio-group v-model="tyLetter">-->
+<!--                <v-radio label="Нет" value="true"></v-radio>-->
+<!--                <div class="d-flex align-center">-->
+<!--                  <v-text-field :readonly="tyLetter" class="mr-4">-->
+<!--                    <template #prepend>-->
+<!--                      <v-radio label="Есть" :value="false">-->
+<!--                      </v-radio>-->
+<!--                    </template>-->
+<!--                  </v-text-field>-->
+<!--                </div>-->
+<!--              </v-radio-group>-->
+<!--            </v-card>-->
 
-            <v-card class="mt-2">
-              <v-card-subtitle>Возможность питания волонтёров</v-card-subtitle>
-              <v-radio-group
-                  v-model="food">
-                <v-radio label="Нет" :value="true"></v-radio>
-                <div class="d-flex align-center">
-                  <v-text-field :readonly="food" class="mr-4">
-                    <template #prepend>
-                      <v-radio label="Есть" :value="false">
-                      </v-radio>
-                    </template>
-                  </v-text-field>
-                </div>
-              </v-radio-group>
-            </v-card>
-          </v-col>
+<!--            <v-card class="mt-2">-->
+<!--              <v-card-subtitle>Возможность питания волонтёров</v-card-subtitle>-->
+<!--              <v-radio-group-->
+<!--                  v-model="food">-->
+<!--                <v-radio label="Нет" :value="true"></v-radio>-->
+<!--                <div class="d-flex align-center">-->
+<!--                  <v-text-field :readonly="food" class="mr-4">-->
+<!--                    <template #prepend>-->
+<!--                      <v-radio label="Есть" :value="false">-->
+<!--                      </v-radio>-->
+<!--                    </template>-->
+<!--                  </v-text-field>-->
+<!--                </div>-->
+<!--              </v-radio-group>-->
+<!--            </v-card>-->
+<!--          </v-col>-->
 
-          <v-col
-              cols="12"
-              sm="6">
+<!--          <v-col-->
+<!--              cols="12"-->
+<!--              sm="6">-->
 
-            <v-card>
-              <v-card-subtitle>Возможность запроса(письма) на имя ректора
-                о поддержке волонтёров на мероприятие
-              </v-card-subtitle>
-              <v-radio-group v-model="memoRector">
-                <v-radio label="Нет" value="true"></v-radio>
-                <div class="d-flex align-center">
-                  <v-text-field :readonly="memoRector" class="mr-4">
-                    <template #prepend>
-                      <v-radio label="Есть" :value="false">
-                      </v-radio>
-                    </template>
-                  </v-text-field>
-                </div>
-              </v-radio-group>
-            </v-card>
+<!--            <v-card>-->
+<!--              <v-card-subtitle>Возможность запроса(письма) на имя ректора-->
+<!--                о поддержке волонтёров на мероприятие-->
+<!--              </v-card-subtitle>-->
+<!--              <v-radio-group v-model="memoRector">-->
+<!--                <v-radio label="Нет" value="true"></v-radio>-->
+<!--                <div class="d-flex align-center">-->
+<!--                  <v-text-field :readonly="memoRector" class="mr-4">-->
+<!--                    <template #prepend>-->
+<!--                      <v-radio label="Есть" :value="false">-->
+<!--                      </v-radio>-->
+<!--                    </template>-->
+<!--                  </v-text-field>-->
+<!--                </div>-->
+<!--              </v-radio-group>-->
+<!--            </v-card>-->
 
-            <v-card class="mt-2">
-              <v-card-subtitle>Возможность написания служебной записки для освобождения волонтёра от учебных занятий
-              </v-card-subtitle>
-              <v-radio-group
-                  v-model="release">
-                <v-radio label="Нет" :value="true"></v-radio>
-                <div class="d-flex align-center">
-                  <v-text-field :readonly="release" class="mr-4">
-                    <template #prepend>
-                      <v-radio label="Есть" :value="false">
-                      </v-radio>
-                    </template>
-                  </v-text-field>
-                </div>
-              </v-radio-group>
-            </v-card>
-          </v-col>
-        </v-row>
+<!--            <v-card class="mt-2">-->
+<!--              <v-card-subtitle>Возможность написания служебной записки для освобождения волонтёра от учебных занятий-->
+<!--              </v-card-subtitle>-->
+<!--              <v-radio-group-->
+<!--                  v-model="release">-->
+<!--                <v-radio label="Нет" :value="true"></v-radio>-->
+<!--                <div class="d-flex align-center">-->
+<!--                  <v-text-field :readonly="release" class="mr-4">-->
+<!--                    <template #prepend>-->
+<!--                      <v-radio label="Есть" :value="false">-->
+<!--                      </v-radio>-->
+<!--                    </template>-->
+<!--                  </v-text-field>-->
+<!--                </div>-->
+<!--              </v-radio-group>-->
+<!--            </v-card>-->
+<!--          </v-col>-->
+<!--        </v-row>-->
 
-        <div>
-          <v-btn
-              @click="validate">
-            Отправить
-          </v-btn>
-        </div>
       </v-form>
     </v-card-text>
+    <v-card-actions>
+      <v-btn
+          @click="validate">
+        Отправить
+      </v-btn>
+    </v-card-actions>
   </v-card>
 
 </template>
@@ -278,20 +278,20 @@ const phone = ref("9233325700")
 const mail = ref("thekevindit@gmail.com")
 const post = ref("Руководитель")
 //Данные по мероприятию
-const nameEvent = ref("Написание вкр")
+const nameEvent = ref("Пример мероприятия")
 const date = ref([new Date()])
 const addressEvent = ref(["Тута"])
-const descriptionEvent = ref("Великое написание описание вкр")
+const descriptionEvent = ref("Описание мероприятия")
 //Данные по волонтерскому сопровождению
 const quantityVolunteer = ref(25)
 const items_skills = ref(['Умный', 'Красивый'])
 const skills = ref([items_skills.value[0], items_skills.value[1]])
-const clothingVolunteer = ref("Джинсы")
+const clothingVolunteer = ref("Официальная")
 const ageRestrictions = ref([18, 30])
 const numberOfFunctional = ref(0)
 //ФНД
 
-const fnds: Ref<{ nameFND: string, dateFND: Date[],address: string[], times: Date[][], quantityVolunteerFND: number, descriptionFND: string, getTime: (index: number) => Date[] }[]> = ref([])
+const fnds: Ref<{ nameFND: string, dateFND: Date[],addresses: string[], times: Date[][], quantityVolunteerFND: number, descriptionFND: string, getTime: (index: number) => Date[] }[]> = ref([])
 watch(numberOfFunctional, (newValue) => {
   for (let i = 0; i < newValue; i++) {
     if (!fnds.value[i]) fnds.value[i] = reactive({

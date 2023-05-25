@@ -6,10 +6,10 @@ import path from "path";
 const prisma = new PrismaClient()
 export default defineEventHandler(async (event) => {
     const body = await readBody(event)
-
+console.log(body)
     const deleteEvent=await prisma.event.delete({
         where:{
-            id:body.id
+          id:body.id
         }
     })
 

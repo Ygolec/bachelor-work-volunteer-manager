@@ -62,9 +62,22 @@
                                             multi-dates
                                             class="mt-2 mb-4" required>
                                 </Datepicker>
-                                <v-text-field
+                                <v-select
+                                    label="Тип мероприятия"
+                                    v-model="typeEvent"
+                                    :items="typeEventItems"
+                                    required
+                                />
+                                <v-select
+                                    label="Уровень мероприятия"
+                                    v-model="levelEvent"
+                                    :items="levelEventItems"
+                                    required
+                                />
+                                <v-textarea
                                         label="Описание мероприятия"
-                                        v-model="descriptionEvent"></v-text-field>
+                                        v-model="descriptionEvent"></v-textarea>
+
                                 <v-list>
                                     <v-list-subheader>Данные по волонтерам</v-list-subheader>
                                     <v-divider></v-divider>
@@ -89,61 +102,6 @@
                                         :rules="[required]"
                                         required
                                 ></v-range-slider>
-                                <v-list>
-                                    <v-list-subheader>ФНД</v-list-subheader>
-                                    <v-divider></v-divider>
-                                </v-list>
-                                <number-imput
-                                        label="Колличество ФНД"
-                                        v-model="numberOfFunctional"
-                                        :rules="[required]"
-                                        required
-                                        tool-tip="Описание что такое ФНД">
-                                </number-imput>
-                                <div v-for="(n,index) in numberOfFunctional">
-                                    <v-text-field
-                                            label="Название ФНД"
-                                            v-model="fnds[index].nameFND"
-                                            required>
-                                        <v-list-subheader>
-                                            ФНД № {{ n }}
-                                        </v-list-subheader>
-                                    </v-text-field>
-                                    <v-select
-                                            label="Адрес ФНД"
-                                            v-model="fnds[index].addresses"
-                                            :rules="[required]"
-                                            required
-                                            :items="addressEvent"
-                                            multiple
-                                            clearable>
-                                    </v-select>
-                                    <v-label>Даты работы ФНД</v-label>
-                                    <Datepicker locale="ru" :enable-time-picker="false" v-model="fnds[index].dateFND"
-                                                @update:model-value="(item)=>checkCountFndTimes(item,fnds[index].times)"
-                                                :allowed-dates="date" multi-dates class="mt-2 mb-4" required>
-                                    </Datepicker>
-                                    <div v-for="(n,indexTime) in fnds[index].dateFND">
-                                        <v-label>Время работы волонтера {{ n }}{{ indexTime }}</v-label>
-                                        <Datepicker
-                                                :model-value="returnTime(fnds[index].getTime(indexTime))"
-                                                @update:model-value="newValue => {let date1 = new Date();date1.setHours(newValue[0].hours,newValue[0].minutes,newValue[0].seconds);let date2 = new Date();date2.setHours(newValue[1].hours,newValue[1].minutes,newValue[1].seconds); fnds[index].times[indexTime] = [date1,date2]}"
-                                                time-picker
-                                                disable-time-range-validation
-                                                range placeholder="Select Time" class="mt-2 mb-4" required>
-                                        </Datepicker>
-                                    </div>
-                                    <v-text-field
-                                            label="Колличество волонтеров"
-                                            v-model.number="fnds[index].quantityVolunteerFND"
-                                            :rules="[required]"
-                                            required>
-                                    </v-text-field>
-                                    <v-text-field
-                                            v-model="fnds[index].descriptionFND"
-                                            label="Описание работы" :rules="[required]" required>
-                                    </v-text-field>
-                                </div>
                             </v-col>
                         </v-row>
                     </v-container>
@@ -173,6 +131,7 @@ import {en} from "vuetify/locale";
 const imageShowDialog = ref(false)
 const emit = defineEmits<{
     (e: 'close'): void
+    (e: 'successUpdate'): void
 }>()
 
 const props = defineProps<{
@@ -190,6 +149,10 @@ const addressEvent = ref(props.event.addressEvent)
 const mainImage = ref()
 const descriptionEvent = ref(props.event.descriptionEvent)
 const date = ref(props.event.date)
+const typeEvent = ref(props.event.type)
+const typeEventItems = ref(['Спортивное', 'Социальное', 'Экологическое', 'Событийное', 'Патриотическое'])
+const levelEvent = ref(props.event.level)
+const levelEventItems = ref(['Международное', 'Всероссийское', 'Федерально-окружное', 'Городское', 'Вузовское', 'Институтcкое'])
 /**
  * Данные по волонтерам
  */
@@ -201,74 +164,8 @@ const ageRestrictions = ref(props.event.ageRestrictions)
 /**
  * ФНД
  */
-const numberOfFunctional = ref(props.event.fnds.length)
-const fnds: Ref<{
-    nameFND: string,
-    dateFND: Date[],
-    addresses: string[],
-    times: Date[][],
-    quantityVolunteerFND: number,
-    descriptionFND: string,
-    getTime: (index: number) => Date[]
-}[]> = ref(props.event.fnds.map(function (fnd: any, index: number) {
-    return {
-        id:fnd.id,
-        nameFND: fnd.nameFND,
-        dateFND: fnd.dateFND,
-        addresses: fnd.addresses,
-        times: fnd.times.map((time: any) => {
-            return [new Date(time.start), new Date(time.end)]
-        }),
-        quantityVolunteerFND: fnd.quantityVolunteerFND,
-        descriptionFND: fnd.descriptionFND,
-        getTime(index: number) {
-            if (!this.times[index]) this.times[index] = [new Date(), new Date()]
-            return this.times[index]
-        }
-    }
-}))
-
-
-watch(numberOfFunctional, (newValue) => {
-    for (let i = 0; i < newValue; i++) {
-        if (!fnds.value[i]) fnds.value[i] = reactive({
-            nameFND: '',
-            dateFND: [],
-            addresses: [],
-            times: [] as Date[][],
-            getTime(index: number) {
-                if (!this.times[index]) this.times[index] = [new Date(), new Date()]
-                return this.times[index]
-            },
-            quantityVolunteerFND: 0,
-            descriptionFND: ''
-        })
-    }
-    fnds.value.splice(newValue)
-}, {immediate: true})
-
-function returnTime(dates: Date[]) {
-    return dates.map(item => {
-        return {hours: item.getHours(), minutes: item.getMinutes(), seconds: item.getSeconds()}
-    })
-}
-
-function checkCountFndTimes(dates: Date[], times: Date[][]) {
-    times.splice(dates.length)
-}
 
 async function updateEvent() {
-    const localFnds = fnds.value.map(item => {
-        return {
-            ...item,
-            times: item.times.map(time => {
-                return {
-                    start: time[0],
-                    end: time[1]
-                }
-            })
-        }
-    })
     const formData = new FormData()
     if (mainImage.value) {
         formData.set('mainImagePath', mainImage.value[0]);
@@ -282,13 +179,15 @@ async function updateEvent() {
     formData.set('skills', JSON.stringify(skills.value));
     formData.set('clothingVolunteer', JSON.stringify(clothingVolunteer.value));
     formData.set('ageRestrictions', JSON.stringify(ageRestrictions.value));
-    formData.set('fnds', JSON.stringify(localFnds));
     formData.set('date', JSON.stringify(date.value));
-
+    formData.set('typeEvent', JSON.stringify(typeEvent.value));
+    formData.set('levelEvent', JSON.stringify(levelEvent.value));
     await $fetch('/api/event/update', {
         method: "put",
         body: formData
     });
+    emit("successUpdate")
+
 }
 
 

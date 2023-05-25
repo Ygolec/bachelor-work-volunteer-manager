@@ -21,6 +21,7 @@
             :items="itemsOfEvent"
             item-value="id"
             class="elevation-1"
+            :search="search"
             :loading="pending"
             loading-text="Loading... Please wait"
     >
@@ -35,6 +36,19 @@
                         vertical
                 ></v-divider>
                 <v-spacer></v-spacer>
+              <v-text-field
+                  v-model="search"
+                  append-icon="mdi-magnify"
+                  label="Поиск"
+                  single-line
+                  hide-details
+              ></v-text-field>
+              <v-divider
+                  class="mx-4"
+                  inset
+                  vertical
+              ></v-divider>
+              <v-spacer></v-spacer>
                 <create-organization-dialog @success-create="refresh()"/>
             </v-toolbar>
         </template>
@@ -69,7 +83,7 @@
 import {Ref} from "vue";
 import CreateOrganizationDialog from "~/components/organizations/CreateOrganizationDialog.vue";
 import EditOrganizationDialog from "~/components/organizations/editOrganizationDialog.vue";
-
+const search=ref()
 const snackbar=ref(false)
 const textSnackbar=ref()
 const timeoutSnackbar:Ref<number>=ref(5000)

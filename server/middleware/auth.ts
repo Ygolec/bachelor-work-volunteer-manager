@@ -1,4 +1,5 @@
 import isAllowedRequest from "~/ts/isAllowedRequest";
+import isAllowedRole from "~/ts/isAllowedRole";
 import jwt from "jsonwebtoken";
 
 const SECRET_KEY: string = useRuntimeConfig().secretKey
@@ -10,13 +11,15 @@ export default defineEventHandler((event) => {
     const token = getCookie(event, 'token')
 
     if (!token) {
-        return sendRedirect(event, '/auth', 401)
+        return sendRedirect(event, '/authentication', 401)
     }
 
     try {
         const decoded = jwt.verify(token, SECRET_KEY)
-        return
+        if (isAllowedRole(url, getMethod(event),decoded.roles[0]))
+            return
+        else return sendRedirect(event, '/authentication', 401)
     } catch (e) {
-        throw createError({statusCode: 401})
+        return sendRedirect(event, '/authentication', 401)
     }
 })

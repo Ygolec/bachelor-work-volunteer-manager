@@ -3,13 +3,13 @@ import { matchPattern } from 'url-matcher'
 
 
 const allowedPrefixes=[
-    '/auth','/volunteerSupport','/api/auth'
+    '/auth','/volunteerSupport','/api/auth','/api/rating'
 ]
 
 
 
 const allowedRoutes=[
-    '/api/event/get','/events','/reqwestForMaintenance'
+    '/api/event/get','/api/volunteerSupport/request','/events','/reqwestForMaintenance','/rating','/api/ApplicationForParticipationInTheEvent/create','/api/ApplicationForParticipationInTheEvent/one'
 ]
 
 export default function isAllowedRequest(path:string,method ='GET'){

@@ -8,6 +8,8 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
+    "@types/d3": "^7.4.0",
+    "@types/file-saver": "^2.0.5",
     "@types/formidable": "^2.0.5",
     "@types/jsonwebtoken": "^9.0.1",
     "@vueuse/core": "^9.13.0",
@@ -21,12 +23,18 @@
     "@types/bcrypt": "^5.0.0",
     "@vuepic/vue-datepicker": "^4.2.0",
     "bcrypt": "^5.1.0",
+    "chart.js": "^3.9.1",
+    "d3": "^7.8.4",
+    "d3-pie-chart": "^0.1.2",
     "date-fns": "^2.29.3",
+    "docx": "^8.0.4",
+    "file-saver": "^2.0.5",
     "jsonwebtoken": "^9.0.0",
     "pinia": "^2.0.30",
     "prisma": "^4.12.0",
     "sass": "^1.57.1",
     "url-matcher": "^0.2.2",
+    "vue-chart-3": "^3.1.8",
     "vuetify": "^3.1.7"
   }
 }
