@@ -128,7 +128,7 @@
                             </v-data-table>
                         </v-sheet>
                         <v-sheet
-                                min-height="70vh"
+
                                 rounded="lg"
                                 v-if="typeOfEvent==='Завершенные'"
                         >
@@ -168,18 +168,19 @@
                                     ></v-textarea>
                                 </template>
                             </v-data-table>
+                          <div class="float-end pa-3">
                             <v-btn
-                            @click="sendStatsOfVolunteer()">
-                                Отправить
+                                @click="sendStatsOfVolunteer()">
+                              Отправить результаты
                             </v-btn>
+                          </div>
                         </v-sheet>
                     </v-col>
                 </v-row>
             </v-container>
         </v-main>
     </v-app>
-  {{ tab }}
-    {{itemsOfFnd}}
+
   <!--    {{applicationForEvent}}-->
 </template>
 
@@ -316,12 +317,14 @@ async function unGhostedApplication(idOfApplication: number) {
     })
     return getFnds()
 }
+
 async function sendStatsOfVolunteer(){
     await $fetch('/api/statsOfVolunteer/create', {
             method: 'POST',
             body: statsOfVolunteer.value
         }
     )
+alert("Результаты записаны")
 }
 </script>
 

@@ -1,5 +1,15 @@
 <template>
-  <v-card max-width="1000px" class="mx-auto mt-2">
+  <v-card  max-width="1000px" class="mx-auto mt-2" v-if="sentRequest===true">
+    <v-card-title>
+      Заявка на сопровождение мероприятия
+    </v-card-title>
+    <v-card-text >
+      <div style="color: green">
+        Заявка успешно отправленна, ожидайте обратного сообщения!
+      </div>
+    </v-card-text>
+  </v-card>
+  <v-card max-width="1000px" class="mx-auto mt-2" v-if="sentRequest===false">
     <v-card-title>
       Заявка на сопровождение мероприятия
     </v-card-title>
@@ -269,22 +279,23 @@
 import {email, required, telephone} from "~/utils/rules";
 import {Ref} from "vue";
 import Datepicker, {VueDatePicker} from "@vuepic/vue-datepicker";
+const sentRequest=ref(false)
 //Организации
 const items_organizations = ref(['СибГУ им. Решетнева', 'Волонтерский центр СибГУ'])
 const organizations = ref([items_organizations.value[0]])
 //Контактные данные
-const fio = ref("Чистобаев")
+const fio = ref("Чистобаев Даниил Андреевич")
 const phone = ref("9233325700")
 const mail = ref("thekevindit@gmail.com")
 const post = ref("Руководитель")
 //Данные по мероприятию
 const nameEvent = ref("Пример мероприятия")
 const date = ref([new Date()])
-const addressEvent = ref(["Тута"])
+const addressEvent = ref(["Мира 89","9 мая 43"])
 const descriptionEvent = ref("Описание мероприятия")
 //Данные по волонтерскому сопровождению
 const quantityVolunteer = ref(25)
-const items_skills = ref(['Умный', 'Красивый'])
+const items_skills = ref(['Доброржелательный', 'Усердный'])
 const skills = ref([items_skills.value[0], items_skills.value[1]])
 const clothingVolunteer = ref("Официальная")
 const ageRestrictions = ref([18, 30])
@@ -362,7 +373,7 @@ async function validate() {
       fnds
     })
   });
-  alert('Отправлено')
+  sentRequest.value=true;
   /* }*/
 }
 </script>
